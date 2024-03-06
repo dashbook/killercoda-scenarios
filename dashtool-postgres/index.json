@@ -4,7 +4,7 @@
   "details": {
     "intro": {
       "text": "intro.md",
-      "foreground": "foreground.sh"
+      "background": "background.sh"
     },
     "steps": [
       {
@@ -22,6 +22,10 @@
       {
         "title": "Port forwarding",
         "text": "step4.md"
+      },
+      {
+        "title": "Extract & Load",
+        "text": "step5.md"
       }
     ],
     "finish": {
@@ -29,6 +33,8 @@
     },
     "assets": {
       "host01": [
+        { "file": "gitignore", "target": "~/"},
+        { "file": "dashtool.json", "target": "~/"},
         { "file": "resources/*.*", "target": "~/"},
         { "file": "bronze/inventory/*.*", "target": "~/"},
         { "file": "silver/inventory/*.*", "target": "~/"},
