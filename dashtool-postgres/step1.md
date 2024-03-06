@@ -25,13 +25,18 @@ Argo is typically deployed on a permanent cluster with proper SSL certificates.
 Since our cluster is used only temporarily, we will not use any encryption. This will lead to warnings in the
 browser later on but these don't need to concern us.
 
-```
+```bash
 kubectl patch deployment \
   argo-server \
   --namespace argo \
   --type='json' \
   -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/args", "value": [
   "server",
+  "--auth-mode=server",
   "--secure=false"
-]}]'
-```{{exec}}
+]},
+{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/scheme", "value": "HTTP"}
+]'
+```{{execute}}
+
+Now you should be able to access the [Argo console]({{TRAFFIC_HOST1_2746}}).
