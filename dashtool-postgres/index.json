@@ -18,6 +18,10 @@
       {
         "title": "Create Services",
         "text": "step3.md"
+      },
+      {
+        "title": "Port forwarding",
+        "text": "step4.md"
       }
     ],
     "finish": {
@@ -25,11 +29,17 @@
     },
     "assets": {
       "host01": [
-        { "file": "resources/*.*", "target": "~/"}
+        { "file": "resources/*.*", "target": "~/"},
+        { "file": "bronze/inventory/*.*", "target": "~/"},
+        { "file": "silver/inventory/*.*", "target": "~/"},
+        { "file": "gold/inventory/*.*", "target": "~/"}
       ]
     }
   },
   "backend": {
     "imageid": "kubernetes-kubeadm-1node-4GB"
+  },
+  "interface": {
+    "layout": "ide"
   }
 }
