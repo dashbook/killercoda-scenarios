@@ -1,0 +1,35 @@
+{
+  "title": "Dashtool postgres example",
+  "description": "Build a lakehouse with dashtool by using data from a postgres database.",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      {
+        "title": "Install Argo",
+        "text": "step1.md"
+      },
+      {
+        "title": "Create secrets",
+        "text": "step2.md"
+      },
+      {
+        "title": "Create Services",
+        "text": "step3.md"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        { "file": "resources/*.*", "target": "~/"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
