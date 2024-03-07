@@ -26,6 +26,18 @@
       {
         "title": "Extract & Load",
         "text": "step5.md"
+      },
+      {
+        "title": "Transform",
+        "text": "step6.md"
+      },
+      {
+        "title": "Analysis",
+        "text": "step7.md"
+      },
+      {
+        "title": "Visualization",
+        "text": "step8.md"
       }
     ],
     "finish": {

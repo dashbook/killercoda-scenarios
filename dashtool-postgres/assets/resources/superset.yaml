@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: superset
-          image: voltrondata/superset-sqlalchemy-adbc-flight-sql:latest
+          image: dashbook/superset-sqlalchemy-adbc-flight-sql:latest
           ports:
             - name: superset
               containerPort: 8088

@@ -22,6 +22,8 @@ Singer Target to load it in to an Iceberg table. For that we create a git reposi
 
 ```
 git init
+git add dashtool.json
+git commit -m "initial commit"
 git branch -M master main
 git branch bronze
 git checkout bronze
@@ -46,19 +48,20 @@ The `target.json` file contains configuration parameters for the
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
 
+Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool can create the corresponding tables.
+
+```
+git add bronze/inventory/tap.json bronze/inventory/target.json
+git commit -m "bronze"
+```{{exec}}
+
 ### Dashtool build
 
 The build command creates a graph of all the entities we have created. So far we
 only defined tables for ingestion, but we will soon ad more complex
 transformations. One important thing to note is that the build command takes the
 current git branch into account. Since Iceberg Tables support branching,
-dashtool will create the table with the corresponding branch. Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool will create the corresponding tables.
-
-```
-git add bronze/inventory/tap.json bronze/inventory/target.json
-```{{exec}}
-
-Now we can run the dashtool build command:
+dashtool will create the table with the corresponding branch. Now we can run the dashtool build command:
 
 ```
 ./dashtool build
