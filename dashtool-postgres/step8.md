@@ -11,7 +11,7 @@ As a first step we have to add our Arrow Flight Server as a Database.
 5. Enter the "SQLALCHEMY_URI":
 
 ```
-adbc_flight_sql://flight_username:flight_password@arrow-flight:31337?disableCertificateVerification=True&useEncryption=False
+adbc_flight_sql://flight_username:flight_password@arrow-flight:31337?disableCertificateVerification=True&useEncryption=True
 ```{{copy}}
 
 6. Click the "TEST CONNECTION" button to test if everything works as expected
