@@ -39,4 +39,3 @@ kubectl patch deployment \
 ]'
 ```{{execute}}
 
-Now you should be able to access the [Argo console]({{TRAFFIC_HOST1_2746}}).

@@ -17,7 +17,12 @@ layer. Imagine we are a retail company and we need to estimate the number of
 trucks we need each month. To do so, we need to calculate the total weight of
 all orders per month. We can calculate this with the query in `gold/inventory/monthly_ordered_weight.sql` by joining
 the `fact_orders` table with the `dim_product` table. It is typical for queries
-in the "gold" layer to compute some kind of aggregation.
+in the "gold" layer to compute some kind of aggregation. Run the following command to add the file to the "gold" branch:
+
+```shell
+git add gold/inventory/monthly_ordered_weight.sql
+git commit -m "gold"
+```{{exec}}
 
 ### Dashtool build
 
@@ -43,6 +48,8 @@ As before, we have to apply the updated workflow to the Kubernetes cluster.
 ```shell
 kubectl apply -f argo/workflow.yaml
 ```{{exec}}
+
+Again, head to the [Argo console]({{TRAFFIC_HOST1_2746}}) to run the workflow.
 
 ### Merge changes into main
 

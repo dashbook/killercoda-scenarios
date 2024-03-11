@@ -30,7 +30,7 @@ spec:
             defaultMode: 0777
       containers:
         - name: localstack
-          image: localstack/localstack
+          image: localstack/localstack:s3-latest
           ports:
             - name: localstack
               containerPort: 4566
