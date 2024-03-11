@@ -42,17 +42,13 @@ SELECT * FROM gold.inventory.monthly_ordered_weight;
 
 The great thing about using materialized views for the transformation is that they automatically keep themselves up-to-date. 
 To test this functionality, we will insert additional entries into our operational database and check how the data in the lakehouse changes.
-To insert the data to the postgres database, connect to the database:
+To insert the data to the postgres database, execute the following kubernetes job:
 
 ```shell
-kubectl exec postgres-0 -- bash
+kubectl apply -f resources/ingest.yaml
 ```{{exec}}
 
-```shell
-psql -h localhost -U postgres
-```{{exec}}
-
-The following command generates some more test data:
+The job will execute the following command in the source database.
 
 ```sql
 INSERT INTO inventory.orders (id, order_date, purchaser, quantity, product_id) VALUES
@@ -71,5 +67,5 @@ INSERT INTO inventory.orders (id, order_date, purchaser, quantity, product_id) V
 ```{{copy}}
 
 Now head to the [Argo Workflow Console]({{TRAFFIC_HOST1_2746}}) and execute the workflow again. Alternatively you could wait until the workflow automatically executes on the schedule.
-Once it finished, go to Superset and view the updated data.
+Once it finished, go to [Superset console]({{TRAFFIC_HOST1_8088}}) and view the updated data.
 
