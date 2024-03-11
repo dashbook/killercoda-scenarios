@@ -1,19 +1,7 @@
 ## Visualization
 
 We finally transformed the data so that it can be used by downstream consumers. The data is typically used for business intelligence or machine learning. 
-With the following command we can start the Superset server.
-
-```
-kubectl apply -f resources/superset.yaml
-```{{exec}}
-
-The download of the container can take some time. So wait until the container is running as expected.
-
-```
-kubectl get pods
-```{{exec}}
-
-If the pod is running, head to the [Superset console]({{TRAFFIC_HOST1_8088}}). Use the credentails username: "admin" and password: "password" to login.
+To visialize the data, head to the [Superset console]({{TRAFFIC_HOST1_8088}}). Use the credentails username: "admin" and password: "password" to login.
 As a first step we have to add our Arrow Flight Server as a Database. 
 
 1. To do that, click on "Settings" in the upper right corner and under "Data" click "Database Connections".
