@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingest
+data:
+  ingest.sql: |
+    INSERT INTO inventory.orders (id, order_date, purchaser, quantity, product_id) VALUES
+    (10005, '2016-03-05', 1004, 3, 108),
+    (10006, '2016-03-10', 1001, 1, 103),
+    (10007, '2016-03-15', 1002, 2, 109),
+    (10008, '2016-04-20', 1003, 1, 104),
+    (10009, '2016-04-25', 1004, 3, 105),
+    (10010, '2016-04-01', 1001, 1, 105),
+    (10011, '2016-05-05', 1002, 2, 101),
+    (10012, '2016-05-10', 1003, 1, 106),
+    (10013, '2016-05-15', 1004, 3, 103),
+    (10014, '2016-06-20', 1001, 1, 107),
+    (10015, '2016-06-25', 1002, 2, 103),
+    (10016, '2016-06-30', 1003, 1, 108);
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: psql
+        image: governmentpaas/psql:latest
+        command: ["/bin/sh", "-c"]
+        args: ["psql -h postgres -U postgres -d postgres -f /tmp/ingest.sql"]
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: postgres-secret
+        volumeMounts:
+        - name: config-volume
+          mountPath: /tmp/ingest.sql
+          subPath: ingest.sql
+      restartPolicy: Never
+      volumes:
+      - name: config-volume
+        configMap:
+          name: ingest
