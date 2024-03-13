@@ -1,9 +1,8 @@
 ## Cluster setup
 
-The lakehouse that we are trying to build in this tutorial is composed of
-different components. We need object-storage to store the data, a database as a
-data source and a visualization server. Before we can start with the actual
-tutorial we need to make sure that all components are runnning.
+The lakehouse we aim to construct in this tutorial comprises several components.
+These include object storage for data, a database as a data source, and a visualization server.
+Before we proceed with the tutorial, it's crucial to ensure that all components are up and running.
 
 ### Install Argo
 

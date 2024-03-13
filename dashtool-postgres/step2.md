@@ -1,9 +1,9 @@
 ### Create Secrets
 
-The lakehouse consists of a catalog, an object_store and a visualization server
-which all require credentials to access them. We will use Kubernetes secrets to
-store this confidential information. Please make sure to use secure passwords in
-production environments.
+The various services within the cluster require credentials for access.
+We will utilize Kubernetes secrets to securely store this sensitive information.
+Please ensure the use of robust passwords in production environments.
+The following command create the required secrets for the tutorial.
 
 1. Postgres
 

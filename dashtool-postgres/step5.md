@@ -18,19 +18,9 @@ specification. The Singer specification defines a standard way to communicate
 between data sources and destinations, called Taps and Targets.
 
 Let's define a Singer Tap to extract the data from the Postgres database and a
-Singer Target to load it in to an Iceberg table. For that we create a git repository and add a bronze branch to it.
-
-```
-git init
-git add dashtool.json
-git commit -m "initial commit"
-git branch -M master main
-git branch bronze
-git checkout bronze
-```{{exec}}
-
-You will see the `tap.json` and `target.json` files in the `bronze/inventory`
-folder.
+Singer Target to load it in to an Iceberg table. 
+You can find the `tap.json` and `target.json` files in the `bronze/inventory`
+directory.
 
 #### Tap
 
@@ -47,6 +37,20 @@ The `target.json` file contains configuration parameters for the
 [Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
+
+Dashtool creates the entities in the lakehouse according to the local git repository.
+If the files exist on a branch in the git repository, it will create the same branch for the entity.
+So to create the Iceberg tables for the Tap and Target we have to add the `tap.json` and `target.json` files to a git branch.
+For that we create a git repository and create a bronze branch.
+
+```
+git init
+git add dashtool.json
+git commit -m "initial commit"
+git branch -M master main
+git branch bronze
+git checkout bronze
+```{{exec}}
 
 Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool can create the corresponding tables.
 
@@ -94,14 +98,14 @@ Navigate your browser to the [Argo console]({{TRAFFIC_HOST1_2746}}) to access th
 UI. As mentioned earlier, you might see a warning from the browser that the page
 uses a self-signed certificate, which is okay for our use case.
 
-Go to the "Cron Workflows" tab on the left and select the "dashtool" workflow.
-By pressing "run", the workflow will start and you will see information about
+Go to the "Cron Workflows" tab on the left and select the "dashtool" workflow (you might need to remove any search filters to see it).
+By pressing "Submit", the workflow will start and you will see information about
 the individual steps.
 
 ### Merge changes into main
 
 If your workflows ran successfully, you can merge the changes into the main
-branch.
+branch. This will also merge the "bronze" branch of the Iceberg tables into the "main" branch the next time you run dashtool.
 
 ```
 git checkout main
