@@ -1,81 +1,27 @@
-## Transform (T)
+## Visualization
 
-Now that we loaded the data from the data source into the lakehouse, it's time
-to transform the data according to our needs. In this tutorial we will create a
-"Medallion" architecture with a "bronze", a "silver" and a "gold" layer. The
-"bronze" layer contains replicated data from the source system. The "silver"
-layer contains cleansed, merged, conformed, and anonymised data from the
-"bronze" layer. It provides a solid basis for further analysis. The "gold" layer
-provides consumption ready data sets for Business intelligence, reporting and
-Machine learning.
+After executing the workflow, the data from the database should have been replicated to the lakehouse.
+To check if everything worked as expected, head to the [Superset console]({{TRAFFIC_HOST1_8088}}). Use the credentails username: "admin" and password: "password" to login.
+As a first step we have to add our Arrow Flight Server as a Database. 
 
-Let's create a silver branch to work on tranforming the data.
+1. To do that, click on "Settings" in the upper right corner and under "Data" click "Database Connections".
+2. On the next screen click "+ Database" also in the uppper right corner. 
+3. In the "Connect a Database" window, click the "SUPPORTED DATABASES" drop-down menu and select "Other".
+4. Use "Flight SQL" as the "DISPLAY NAME".
+5. Enter the "SQLALCHEMY_URI":
 
-```shell
-git branch silver
-git checkout silver
-```{{exec}}
+```
+adbc_flight_sql://flight_username:flight_password@arrow-flight:31337?disableCertificateVerification=True&useEncryption=True
+```{{copy}}
 
-### Transformation for the Fact table
+6. Click the "TEST CONNECTION" button to test if everything works as expected
+7. Click the "CONNECT" button to save the database connection
 
-Dashtool will create a Materialized view for every `.sql` file in the directory
-tree. We can see one example in `silver/inventory/fact_order.sql`, which will
-create the Materialized View `silver.inventory.fact_order`. As you can see, we
-are renaming the columns to fit to our organizational standards.
+Now that we have a connection to the Arrow Flight Server, we can query the data in the lakehouse. So let's test it out.
 
-The "silver" layer is a good place to apply
-[Dimensional Modeling](https://en.wikipedia.org/wiki/Dimensional_modeling).
-Dimensional Modeling distinguishes between qualitative and quantitative data and
-separates them into dimension and fact tables, respectively. The Orders table
-contains the `quantity` column as a quantitative measure and is therefore a fact
-table. It is related to the dimension tables `dim_customer` and `dim_product`
-through the colums `customerId` and `productId`.
-
-The following command will add the silver files to the silver branch.
-
-```shell
-git add silver/inventory/fact_order.sql silver/inventory/dim_customer.sql silver/inventory/dim_product.sql
-git commit -m "silver"
-```{{exec}}
-
-### Dashtool build
-
-By running the dashtool build command, we will create the corresponding
-Materialized Views in the lakehouse. Keep in mind that we are currently on the
-"silver" branch and therefore the materialized views are created with a "silver"
-branch.
-
-```shell
-./dashtool build
-```{{exec}}
-
-### Dashtool workflow
-
-By running the dashtool workflow command, we will create an Argo Workflow that
-creates jobs to refresh the previously created Materialized Views. Refreshing
-the Materialized View means checking if the data in the source tables has
-changed and if so, updating the data in the Materialized View.
-
-```shell
-./dashtool workflow
-```{{exec}}
-
-### Create argo workflow
-
-To apply the updated workflow, execute the following command. Similar to before,
-you can go to the [Argo console]({{TRAFFIC_HOST1_2746}}) to start the workflow, otherwise it will
-start according to its schedule.
-
-```shell
-kubectl apply -f argo/workflow.yaml
-```{{exec}}
-
-### Merge changes into main
-
-If your workflows ran successfully, you can merge the changes into the main
-branch.
-
-```shell
-git checkout main
-git merge silver
-```{{exec}}
+1. Click the "SQL" drop down menu in the top left corner and select "SQL Lab"
+2. Write a query that you want to execute:
+```sql
+SELECT * FROM bronze.inventory.orders;
+```{{copy}}
+3. Click the "RUN" button

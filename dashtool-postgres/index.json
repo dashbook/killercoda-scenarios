@@ -28,16 +28,20 @@
         "text": "step5.md"
       },
       {
-        "title": "Transform",
+        "title": "Visualization",
         "text": "step6.md"
       },
       {
-        "title": "Analysis",
+        "title": "Transform",
         "text": "step7.md"
       },
       {
-        "title": "Visualization",
+        "title": "Analysis",
         "text": "step8.md"
+      },
+      {
+        "title": "Refresh",
+        "text": "step9.md"
       }
     ],
     "finish": {

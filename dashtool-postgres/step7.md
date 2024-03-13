@@ -1,33 +1,49 @@
-## Analysis
+## Transform (T)
 
-Now that we have clean and properly modeled data in the lakehouse, we can start
-answering questions about our data. This is what the "gold" layer is for.
+Now that we loaded the data from the data source into the lakehouse, it's time
+to transform the data according to our needs. In this tutorial we will create a
+"Medallion" architecture with a "bronze", a "silver" and a "gold" layer. The
+"bronze" layer contains replicated data from the source system. The "silver"
+layer contains cleansed, merged, conformed, and anonymised data from the
+"bronze" layer. It provides a solid basis for further analysis. The "gold" layer
+provides consumption ready data sets for Business intelligence, reporting and
+Machine learning.
 
-Let's create a gold branch.
+Let's create a silver branch to work on tranforming the data.
 
 ```shell
-git branch gold
-git checkout gold
+git branch silver
+git checkout silver
 ```{{exec}}
 
-### Transformation to calculate monthly weight
+### Transformation for the Fact table
 
-Let's perform an example analysis that is typically performed in the "gold"
-layer. Imagine we are a retail company and we need to estimate the number of
-trucks we need each month. To do so, we need to calculate the total weight of
-all orders per month. We can calculate this with the query in `gold/inventory/monthly_ordered_weight.sql` by joining
-the `fact_orders` table with the `dim_product` table. It is typical for queries
-in the "gold" layer to compute some kind of aggregation. Run the following command to add the file to the "gold" branch:
+Dashtool will create a Materialized view for every `.sql` file in the directory
+tree. We can see one example in `silver/inventory/fact_order.sql`, which will
+create the Materialized View `silver.inventory.fact_order`. As you can see, we
+are renaming the columns to fit to our organizational standards.
+
+The "silver" layer is a good place to apply
+[Dimensional Modeling](https://en.wikipedia.org/wiki/Dimensional_modeling).
+Dimensional Modeling distinguishes between qualitative and quantitative data and
+separates them into dimension and fact tables, respectively. The Orders table
+contains the `quantity` column as a quantitative measure and is therefore a fact
+table. It is related to the dimension tables `dim_customer` and `dim_product`
+through the colums `customerId` and `productId`.
+
+The following command will add the silver files to the silver branch.
 
 ```shell
-git add gold/inventory/monthly_ordered_weight.sql
-git commit -m "gold"
+git add silver/inventory/fact_order.sql silver/inventory/dim_customer.sql silver/inventory/dim_product.sql
+git commit -m "silver"
 ```{{exec}}
 
 ### Dashtool build
 
-Again, we will create the corresponding Materialized Views by running the
-Dashtool build command.
+By running the dashtool build command, we will create the corresponding
+Materialized Views in the lakehouse. Keep in mind that we are currently on the
+"silver" branch and therefore the materialized views are created with a "silver"
+branch.
 
 ```shell
 ./dashtool build
@@ -35,47 +51,31 @@ Dashtool build command.
 
 ### Dashtool workflow
 
-And create the updated Argo Workflow by running the Dashtool workflow command.
+By running the dashtool workflow command, we will create an Argo Workflow that
+creates jobs to refresh the previously created Materialized Views. Refreshing
+the Materialized View means checking if the data in the source tables has
+changed and if so, updating the data in the Materialized View.
 
 ```shell
 ./dashtool workflow
 ```{{exec}}
-  
+
 ### Create argo workflow
 
-As before, we have to apply the updated workflow to the Kubernetes cluster.
+To apply the updated workflow, execute the following command. Similar to before,
+you can go to the [Argo console]({{TRAFFIC_HOST1_2746}}) to start the workflow, otherwise it will
+start according to its schedule.
 
 ```shell
 kubectl apply -f argo/workflow.yaml
 ```{{exec}}
-
-Again, head to the [Argo console]({{TRAFFIC_HOST1_2746}}) to run the workflow.
 
 ### Merge changes into main
 
-If the transformations ran successfully, you can merge the gold branch into the
-main branch.
+If your workflows ran successfully, you can merge the changes into the main
+branch.
 
 ```shell
 git checkout main
-git merge gold
-```{{exec}}
-
-The last time we execute the dashtool `build` command we were still on the `gold` branch, which means that the newly created entities in the lakehouse are also on the gold branch.
-In order to merge them to the `main` branch we have to execute dashtool `build` again on the main branch. So let's do that.
-
-```shell
-./dashtool build
-```{{exec}}
-
-Similarly, the current workflow will refresh the data on the gold branch. Let's execute dashtool `workflow` on the main branch so that the workflow will refresh the data on the main branch.
-
-```shell
-./dashtool workflow
-```{{exec}}
-
-And let's apply the newest version to the Kubernetes cluster.
-
-```shell
-kubectl apply -f argo/workflow.yaml
+git merge silver
 ```{{exec}}

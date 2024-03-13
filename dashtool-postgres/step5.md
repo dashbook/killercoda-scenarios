@@ -111,3 +111,9 @@ branch. This will also merge the "bronze" branch of the Iceberg tables into the 
 git checkout main
 git merge bronze
 ```{{exec}}
+
+Run "dashtool build" again to merge the bronze tables onto the main branch so that they can be accessed from other processes.
+
+```
+./dashtool build
+```{{exec}}

@@ -1,59 +1,83 @@
-## Visualization
+## Analysis
 
-We finally transformed the data so that it can be used by downstream consumers. The data is typically used for business intelligence or machine learning. 
-To visialize the data, head to the [Superset console]({{TRAFFIC_HOST1_8088}}). Use the credentails username: "admin" and password: "password" to login.
-As a first step we have to add our Arrow Flight Server as a Database. 
+Now that we have clean and properly modeled data in the lakehouse, we can start
+answering questions about our data. This is what the "gold" layer is for.
 
-1. To do that, click on "Settings" in the upper right corner and under "Data" click "Database Connections".
-2. On the next screen click "+ Database" also in the uppper right corner. 
-3. In the "Connect a Database" window, click the "SUPPORTED DATABASES" drop-down menu and select "Other".
-4. Use "Flight SQL" as the "DISPLAY NAME".
-5. Enter the "SQLALCHEMY_URI":
-
-```
-adbc_flight_sql://flight_username:flight_password@arrow-flight:31337?disableCertificateVerification=True&useEncryption=True
-```{{copy}}
-
-6. Click the "TEST CONNECTION" button to test if everything works as expected
-7. Click the "CONNECT" button to save the database connection
-
-Now that we a connection to the Arrow Flight Server, we can query the data in the lakehouse. So let's test it out.
-
-1. Click the "SQL" drop down menu in the top left corner and select "SQL Lab"
-2. Write a query that you want to execute:
-```sql
-SELECT * FROM gold.inventory.monthly_ordered_weight;
-```{{copy}}
-3. Click the "RUN" button
-
-## Refresh data
-
-The great thing about using materialized views for the transformation is that they automatically keep themselves up-to-date. 
-To test this functionality, we will insert additional entries into our operational database and check how the data in the lakehouse changes.
-To insert the data to the postgres database, execute the following kubernetes job:
+Let's create a gold branch.
 
 ```shell
-kubectl apply -f resources/ingest.yaml
+git branch gold
+git checkout gold
 ```{{exec}}
 
-The job will execute the following command in the source database.
+### Transformation to calculate monthly weight
 
-```sql
-INSERT INTO inventory.orders (id, order_date, purchaser, quantity, product_id) VALUES
-(10005, '2016-03-05', 1004, 3, 108),
-(10006, '2016-03-10', 1001, 1, 103),
-(10007, '2016-03-15', 1002, 2, 109),
-(10008, '2016-04-20', 1003, 1, 104),
-(10009, '2016-04-25', 1004, 3, 105),
-(10010, '2016-04-01', 1001, 1, 105),
-(10011, '2016-05-05', 1002, 2, 101),
-(10012, '2016-05-10', 1003, 1, 106),
-(10013, '2016-05-15', 1004, 3, 103),
-(10014, '2016-06-20', 1001, 1, 107),
-(10015, '2016-06-25', 1002, 2, 103),
-(10016, '2016-06-30', 1003, 1, 108);
-```{{copy}}
+Let's perform an example analysis that is typically performed in the "gold"
+layer. Imagine we are a retail company and we need to estimate the number of
+trucks we need each month. To do so, we need to calculate the total weight of
+all orders per month. We can calculate this with the query in `gold/inventory/monthly_ordered_weight.sql` by joining
+the `fact_orders` table with the `dim_product` table. It is typical for queries
+in the "gold" layer to compute some kind of aggregation. Run the following command to add the file to the "gold" branch:
 
-Now head to the [Argo Workflow Console]({{TRAFFIC_HOST1_2746}}) and execute the workflow again. Alternatively you could wait until the workflow automatically executes on the schedule.
-Once it finished, go to [Superset console]({{TRAFFIC_HOST1_8088}}) and view the updated data.
+```shell
+git add gold/inventory/monthly_ordered_weight.sql
+git commit -m "gold"
+```{{exec}}
 
+### Dashtool build
+
+Again, we will create the corresponding Materialized Views by running the
+Dashtool build command.
+
+```shell
+./dashtool build
+```{{exec}}
+
+### Dashtool workflow
+
+And create the updated Argo Workflow by running the Dashtool workflow command.
+
+```shell
+./dashtool workflow
+```{{exec}}
+  
+### Create argo workflow
+
+As before, we have to apply the updated workflow to the Kubernetes cluster.
+
+```shell
+kubectl apply -f argo/workflow.yaml
+```{{exec}}
+
+Again, head to the [Argo console]({{TRAFFIC_HOST1_2746}}) to run the workflow.
+
+### Merge changes into main
+
+If the transformations ran successfully, you can merge the gold branch into the
+main branch.
+
+```shell
+git checkout main
+git merge gold
+```{{exec}}
+
+The last time we execute the dashtool `build` command we were still on the `gold` branch, which means that the newly created entities in the lakehouse are also on the gold branch.
+In order to merge them to the `main` branch we have to execute dashtool `build` again on the main branch. So let's do that.
+
+```shell
+./dashtool build
+```{{exec}}
+
+Similarly, the current workflow will refresh the data on the gold branch. Let's execute dashtool `workflow` on the main branch so that the workflow will refresh the data on the main branch.
+
+```shell
+./dashtool workflow
+```{{exec}}
+
+And let's apply the newest version to the Kubernetes cluster.
+
+```shell
+kubectl apply -f argo/workflow.yaml
+```{{exec}}
+
+You can query the data in the [Superset console]({{TRAFFIC_HOST1_8088}}).
