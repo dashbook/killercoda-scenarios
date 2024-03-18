@@ -12,16 +12,8 @@
         "text": "step1.md"
       },
       {
-        "title": "Create secrets",
+        "title": "Create services",
         "text": "step2.md"
-      },
-      {
-        "title": "Create Services",
-        "text": "step3.md"
-      },
-      {
-        "title": "Port forwarding",
-        "text": "step4.md"
       },
       {
         "title": "Extract & Load",

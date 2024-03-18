@@ -6,25 +6,13 @@ Before we proceed with the tutorial, it's crucial to ensure that all components 
 
 ### Install Argo
 
-Next, we need to install Argo workflows in the cluster. We will create a `argo`
-namespace for all its resources.
-
-```
-kubectl create namespace argo
-```{{exec}}
-
-The next step will install argo workflows. Please specify which version should
-be used.
-
-```
-kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.2/install.yaml
-```{{exec}}
-
-Argo is typically deployed on a permanent cluster with proper SSL certificates.
-Since our cluster is used only temporarily, we will not use any encryption. This will lead to warnings in the
-browser later on but these don't need to concern us.
+As a first step, the following command will install Argo Workflows in the cluster.
 
 ```bash
+kubectl create namespace argo
+
+kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.2/install.yaml
+
 kubectl patch deployment \
   argo-server \
   --namespace argo \
