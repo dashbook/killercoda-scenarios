@@ -1,118 +1,86 @@
-## Extract & Load (EL)
+## Transform (T)
 
-Now that we have everything setup, we can start with the actual tutorial. In
-most cases, data systems are composed of a transactional and an analytical part.
-Transactional systems read and write single entries while analytical
-systems answer aggregate queries on multiple entries. In this tutorial, the
-postgres database, that we've setup, plays the role of the transactional system
-and the lakehouse will play the role of the analytical system. We will create
-the lakehouse by applying the Extract-Load-Transform (ELT) paradigm. By doing
-so, we will first copy the data from the transactional system to the analytical
-system without applying any transformations. This is called the EL step, which
-we will do next.
+Now that we loaded the data from the data source into the lakehouse, it's time
+to transform the data according to our needs. In this tutorial we will create a
+"Medallion" architecture with a "bronze", a "silver" and a "gold" layer. The
+"bronze" layer contains replicated data from the source system. The "silver"
+layer contains cleansed, merged, conformed, and anonymised data from the
+"bronze" layer. It provides a solid basis for further analysis. The "gold" layer
+provides consumption ready data sets for Business intelligence, reporting and
+Machine learning.
 
-### Configure Singer Tap and Target
+Let's create a silver branch to work on tranforming the data.
 
-Dashtool handles the EL step by leveraging the [Singer](www.singer.io)
-specification. The Singer specification defines a standard way to communicate
-between data sources and destinations, called Taps and Targets.
-
-Let's define a Singer Tap to extract the data from the Postgres database and a
-Singer Target to load it in to an Iceberg table. 
-You can find the `tap.json` and `target.json` files in the `bronze/inventory`
-directory.
-
-#### Tap
-
-The `tap.json` file contains the configuration parameters for the
-[Pipelinewise Postgres Tap](https://github.com/transferwise/pipelinewise-tap-postgres).
-It contains information about the connection, which schemas to extract and what
-kind of replication to use. One great thing about the Pipelinewise Postgres Tap
-is that it allows a log based replication which enables incremental extraction
-of the data without difficult setup.
-
-#### Target
-
-The `target.json` file contains configuration parameters for the
-[Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
-information about which tables to extract, which iceberg catalog to use and
-parameters for the S3 object store.
-
-Dashtool creates the entities in the lakehouse according to the local git repository.
-If the files exist on a branch in the git repository, it will create the same branch for the entity.
-So to create the Iceberg tables for the Tap and Target we have to add the `tap.json` and `target.json` files to a git branch.
-For that we create a git repository and create a bronze branch.
-
-```
-git init
-git add dashtool.json
-git commit -m "initial commit"
-git branch -M master main
-git branch bronze
-git checkout bronze
+```shell
+git branch silver
+git checkout silver
 ```{{exec}}
 
-Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool can create the corresponding tables.
+### Transformation for the Fact table
 
-```
-git add bronze/inventory/tap.json bronze/inventory/target.json
-git commit -m "bronze"
+Dashtool will create a Materialized view for every `.sql` file in the directory
+tree. We can see one example in `silver/inventory/fact_order.sql`, which will
+create the Materialized View `silver.inventory.fact_order`. As you can see, we
+are renaming the columns to fit to our organizational standards.
+
+The "silver" layer is a good place to apply
+[Dimensional Modeling](https://en.wikipedia.org/wiki/Dimensional_modeling).
+Dimensional Modeling distinguishes between qualitative and quantitative data and
+separates them into dimension and fact tables, respectively. The Orders table
+contains the `quantity` column as a quantitative measure and is therefore a fact
+table. It is related to the dimension tables `dim_customer` and `dim_product`
+through the colums `customerId` and `productId`.
+
+The following command will add the silver files to the silver branch.
+
+```shell
+git add silver/inventory/fact_order.sql silver/inventory/dim_customer.sql silver/inventory/dim_product.sql
+git commit -m "silver"
 ```{{exec}}
 
 ### Dashtool build
 
-The build command creates a graph of all the entities we have created. So far we
-only defined tables for ingestion, but we will soon ad more complex
-transformations. One important thing to note is that the build command takes the
-current git branch into account. Since Iceberg Tables support branching,
-dashtool will create the table with the corresponding branch. Now we can run the dashtool build command:
+By running the dashtool build command, we will create the corresponding
+Materialized Views in the lakehouse. Keep in mind that we are currently on the
+"silver" branch and therefore the materialized views are created with a "silver"
+branch.
 
-```
+```shell
 ./dashtool build
 ```{{exec}}
 
 ### Dashtool workflow
 
-The workflow command takes the graph, generated by the build command, and
-creates an Argo Workflow that can be used to update the data in the tables. The
-output of the command is written to the `argo/workflow.yaml` file.
+By running the dashtool workflow command, we will create an Argo Workflow that
+creates jobs to refresh the previously created Materialized Views. Refreshing
+the Materialized View means checking if the data in the source tables has
+changed and if so, updating the data in the Materialized View.
 
-```
+```shell
 ./dashtool workflow
 ```{{exec}}
 
 ### Create argo workflow
 
-By executing the following command you deploy the created Workflow to the
-Kubernetes cluster. Be default the workflow is defined as a "Cron" workflow that
-will execute daily. If you want to change this, you can edit the
-`argo/workflow.yaml` file.
+To apply the updated workflow, execute the following command. Similar to before,
+you can go to the [Argo console]({{TRAFFIC_HOST1_2746}}) to start the workflow, otherwise it will
+start according to its schedule.
 
-```
+```shell
 kubectl apply -f argo/workflow.yaml
 ```{{exec}}
-
-### Run Argo Workflow
-
-Navigate your browser to the [Argo console]({{TRAFFIC_HOST1_2746}}) to access the Argo Workflow
-UI. As mentioned earlier, you might see a warning from the browser that the page
-uses a self-signed certificate, which is okay for our use case.
-
-Go to the "Cron Workflows" tab on the left and select the "dashtool" workflow (you might need to remove any search filters to see it).
-By pressing "Submit", the workflow will start and you will see information about
-the individual steps.
 
 ### Merge changes into main
 
 If your workflows ran successfully, you can merge the changes into the main
-branch. This will also merge the "bronze" branch of the Iceberg tables into the "main" branch the next time you run dashtool.
+branch.
 
-```
+```shell
 git checkout main
-git merge bronze
+git merge silver
 ```{{exec}}
 
-Run "dashtool build" again to merge the bronze tables onto the main branch so that they can be accessed from other processes.
+Run "dashtool build" again to merge the silver tables onto the main branch so that they can be accessed from other processes.
 
 ```
 ./dashtool build

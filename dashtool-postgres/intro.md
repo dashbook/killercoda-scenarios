@@ -20,7 +20,7 @@ To get started, let's walk through what you can expect in this tutorial:
 3. **Automated Data Refresh**: Leveraging Argo Workflows, you'll orchestrate
    Kubernetes Jobs that use the
    [Datafusion](https://github.com/apache/arrow-datafusion) query engine to
-   automatically update the target tables based on user-defined schedules.
+   automatically update the target tables.
 4. **Open Table Format**: Utilizing
    [Apache Iceberg](https://iceberg.apache.org/), you'll store your transformed
    data in a highly performant table format that can be accessed by query
