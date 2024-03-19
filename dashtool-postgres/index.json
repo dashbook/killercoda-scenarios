@@ -44,7 +44,7 @@
         { "file": "gitignore", "target": "~/"},
         { "file": "dashtool.json", "target": "~/"},
         { "file": "resources/*.yaml", "target": "~/"},
-        { "file": "resources/jobs/*.yaml", "target": "~/resources"},
+        { "file": "resources/jobs/*.yaml", "target": "~/"},
         { "file": "resources/*.sh", "target": "~/", "chmod": "+x"},
         { "file": "bronze/inventory/*.*", "target": "~/"},
         { "file": "silver/inventory/*.*", "target": "~/"},
