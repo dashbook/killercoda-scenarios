@@ -32,11 +32,11 @@ spec:
         command: ["/bin/sh", "-c"]
         args: ["mysql -h mysql -P 3306 -u mysql -p mysql inventory < /tmp/ingest.sql"]
         env:
-        - name: PGPASSWORD
+        - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               key: password
-              name: postgres-secret
+              name: mysql-secret
         volumeMounts:
         - name: config-volume
           mountPath: /tmp/ingest.sql

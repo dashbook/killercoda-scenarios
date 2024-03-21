@@ -1,4 +1,4 @@
-# Dashtool example with Postgres
+# Dashtool example with MySQL
 
 Welcome to our tutorial on creating a data lakehouse using
 [dashtool](http://www.github.com/dashbook/dashtool). In this project, you'll
@@ -10,7 +10,7 @@ object storage.
 
 To get started, let's walk through what you can expect in this tutorial:
 
-1. **Data ingestion**: We'll utilize a PostgreSQL database as our operational
+1. **Data ingestion**: We'll utilize a MySQL database as our operational
    system and demonstrate how to extract data using one of the 200+ available
    connectors compatible with the [Singer specification](http://www.singer.io).
    These connectors allow you to easily ingest data from various sources.
