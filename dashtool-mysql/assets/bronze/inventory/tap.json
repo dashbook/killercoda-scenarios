@@ -1,0 +1,7 @@
+{
+  "host": "mysql",
+  "port": 3306,
+  "user": "mysql",
+  "password": "$MYSQL_PASSWORD",
+  "database": "inventory"
+}

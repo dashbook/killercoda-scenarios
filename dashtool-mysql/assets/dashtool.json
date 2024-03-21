@@ -1,0 +1,21 @@
+{
+  "plugin": "sql",
+  "catalogUrl": "mysql://root:$MYSQL_PASSWORD@0.0.0.0:3306/inventory",
+  "awsRegion": "us-east-1",
+  "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+  "awsEndpoint": "http://0.0.0.0:4566",
+  "awsAllowHttp": "true",
+  "bucket": "s3://example-mysql",
+  "secrets": {
+    "mysql-secret": {
+      "password": "MYSQL_PASSWORD"
+    },
+    "aws-secret": {
+      "secret_access_key": "AWS_SECRET_ACCESS_KEY"
+    }
+  },
+  "env": {
+    "CATALOG_URL": "mysql://root:$MYSQL_PASSWORD@mysql:3306/inventory",
+    "AWS_ENDPOINT": "http://localstack:4566"
+  }
+}
