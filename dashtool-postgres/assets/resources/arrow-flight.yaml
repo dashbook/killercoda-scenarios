@@ -10,7 +10,7 @@ data:
   aws-default-region: us-east-1
   aws-endpoint: "http://localstack:4566"
   aws-allow-http: "TRUE"
-  current-database: "gold"
+  current-database: "datafusion"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: arrow-flight
-          image: ghcr.io/dashbook/iceberg-datafusion-arrow-flight:sql
+          image: dashbook/iceberg-datafusion-arrow-flight:sql
           ports:
             - containerPort: 31337
           env:
