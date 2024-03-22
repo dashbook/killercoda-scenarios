@@ -23,7 +23,7 @@ spec:
               mountPath: /var/lib/mysql/
           env:
             - name: MYSQL_USER
-              value: mysql
+              value: mysqluser
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:

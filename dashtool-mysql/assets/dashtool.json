@@ -1,6 +1,6 @@
 {
   "plugin": "sql",
-  "catalogUrl": "mysql://root:$MYSQL_PASSWORD@0.0.0.0:3306/inventory",
+  "catalogUrl": "mysql://mysqluser:$MYSQL_PASSWORD@0.0.0.0:3306/inventory",
   "awsRegion": "us-east-1",
   "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
   "awsEndpoint": "http://0.0.0.0:4566",
@@ -15,7 +15,7 @@
     }
   },
   "env": {
-    "CATALOG_URL": "mysql://root:$MYSQL_PASSWORD@mysql:3306/inventory",
+    "CATALOG_URL": "mysql://mysqluser:$MYSQL_PASSWORD@mysql:3306/inventory",
     "AWS_ENDPOINT": "http://localstack:4566"
   }
 }

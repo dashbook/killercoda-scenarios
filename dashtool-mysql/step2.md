@@ -7,8 +7,8 @@ The following command creates the required secrets for the tutorial.
 
 
 ```bash
-kubectl create secret generic mysql-secret --from-literal=password=mysql --from-literal=catalog-url=mysql://root:mysql@mysql:3306/inventory
-export MYSQL_PASSWORD=mysql
+kubectl create secret generic mysql-secret --from-literal=password=mysqlpw --from-literal=catalog-url=mysql://mysqluser:mysqlpw@mysql:3306/inventory
+export MYSQL_PASSWORD=mysqlpw
 
 kubectl create secret generic arrow-flight-secret --from-literal=password=flight_password
 

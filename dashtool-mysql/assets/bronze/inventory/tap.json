@@ -1,7 +1,8 @@
 {
   "host": "mysql",
   "port": 3306,
-  "user": "root",
+  "user": "mysqluser",
   "password": "$MYSQL_PASSWORD",
-  "database": "inventory"
+  "database": "inventory",
+  "filter_dbs": "inventory"
 }

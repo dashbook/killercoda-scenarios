@@ -6,7 +6,7 @@
     "inventory-products": { "identifier": "bronze.inventory.products" }
   },
   "catalogName": "bronze",
-  "catalogUrl": "mysql://root:mysql@mysql:3306/inventory",
+  "catalogUrl": "mysql://mysqluser:$MYSQL_PASSWORD@mysql:3306/inventory",
   "awsRegion": "us-east-1",
   "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
   "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
