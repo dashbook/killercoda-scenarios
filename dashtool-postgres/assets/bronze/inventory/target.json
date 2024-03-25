@@ -1,9 +1,18 @@
 {
   "image": "dashbook/pipelinewise-tap-postgres:sql",
   "streams": {
-    "inventory-orders": { "identifier": "bronze.inventory.orders" },
-    "inventory-customers": { "identifier": "bronze.inventory.customers" },
-    "inventory-products": { "identifier": "bronze.inventory.products" }
+    "inventory-orders": { 
+      "identifier": "bronze.inventory.orders",
+      "replication": "LOG_BASED"
+    },
+    "inventory-customers": { 
+      "identifier": "bronze.inventory.customers",
+      "replication": "LOG_BASED"
+    },
+    "inventory-products": { 
+      "identifier": "bronze.inventory.products",
+      "replication": "LOG_BASED"
+    }
   },
   "catalogName": "bronze",
   "catalogUrl": "postgres://postgres:postgres@postgres:5432",
