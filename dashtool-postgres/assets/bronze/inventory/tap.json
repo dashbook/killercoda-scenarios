@@ -5,5 +5,5 @@
   "password": "$POSTGRES_PASSWORD",
   "dbname": "postgres",
   "filter_schemas": "inventory",
-  "default_replication_method": "LOG_BASED"
+  "logical_poll_total_seconds": 30
 }

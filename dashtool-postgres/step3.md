@@ -31,6 +31,11 @@ kind of replication to use. One great thing about the Pipelinewise Postgres Tap
 is that it allows a log based replication which enables incremental extraction
 of the data without difficult setup.
 
+Run the following command to create a logical replication slot for pipelinewise:
+```bash
+kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('pipelinewise_postgres', 'wal2json');"
+```
+
 #### Target
 
 The `target.json` file contains configuration parameters for the
