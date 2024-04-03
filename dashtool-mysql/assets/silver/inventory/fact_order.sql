@@ -1,5 +1,5 @@
 select 
-  id as orderId,
+  order_number as orderId,
   order_date as date,
   quantity,
   purchaser as customerId,
