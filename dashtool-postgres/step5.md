@@ -63,7 +63,7 @@ changed and if so, updating the data in the Materialized View.
 ### Create argo workflow
 
 To apply the updated workflow, execute the following command. Similar to before,
-you can go to the [Argo console]({{TRAFFIC_HOST1_2746}}) to start the workflow, otherwise it will
+you can go to the [Argo console]({{TRAFFIC_HOST1_32746}}) to start the workflow, otherwise it will
 start according to its schedule.
 
 ```shell

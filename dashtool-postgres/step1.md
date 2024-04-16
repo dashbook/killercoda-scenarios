@@ -24,5 +24,12 @@ kubectl patch deployment \
 ]},
 {"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/scheme", "value": "HTTP"}
 ]'
+kubectl patch service \
+  argo-server \
+  --namespace argo \
+  --type='json' \
+  -p='[{"op": "replace", "path": "/spec/type", "value": "NodePort"},
+{"op": "add", "path": "/spec/ports/0/nodePort", "value": 32746 }
+]'
 ```{{execute}}
 

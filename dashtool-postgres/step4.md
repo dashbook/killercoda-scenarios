@@ -1,7 +1,7 @@
 ## Visualization
 
 After executing the workflow, the data from the database should have been replicated to the lakehouse.
-To check if everything worked as expected, head to the [Superset console]({{TRAFFIC_HOST1_8088}}). Use the credentails username: "admin" and password: "password" to login.
+To check if everything worked as expected, head to the [Superset console]({{TRAFFIC_HOST1_32088}}). Use the credentails username: "admin" and password: "password" to login.
 As a first step we have to add our Arrow Flight Server as a Database. 
 
 1. To do that, click on "Settings" in the upper right corner and under "Data" click "Database Connections".

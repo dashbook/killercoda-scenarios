@@ -26,6 +26,6 @@ INSERT INTO inventory.orders (id, order_date, purchaser, quantity, product_id) V
 (10016, '2016-06-30', 1003, 1, 108);
 ```{{copy}}
 
-Now head to the [Argo Workflow Console]({{TRAFFIC_HOST1_2746}}) and execute the workflow again. Alternatively you could wait until the workflow automatically executes on the schedule.
-Once it finished, go to [Superset console]({{TRAFFIC_HOST1_8088}}) and view the updated data.
+Now head to the [Argo Workflow Console]({{TRAFFIC_HOST1_32746}}) and execute the workflow again. Alternatively you could wait until the workflow automatically executes on the schedule.
+Once it finished, go to [Superset console]({{TRAFFIC_HOST1_32088}}) and view the updated data.
 

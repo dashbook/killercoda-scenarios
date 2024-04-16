@@ -94,7 +94,7 @@ kubectl apply -f argo/workflow.yaml
 
 ### Run Argo Workflow
 
-Navigate your browser to the [Argo console]({{TRAFFIC_HOST1_2746}}) to access the Argo Workflow
+Navigate your browser to the [Argo console]({{TRAFFIC_HOST1_32746}}) to access the Argo Workflow
 UI. As mentioned earlier, you might see a warning from the browser that the page
 uses a self-signed certificate, which is okay for our use case.
 

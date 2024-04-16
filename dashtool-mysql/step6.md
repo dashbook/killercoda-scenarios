@@ -49,7 +49,7 @@ As before, we have to apply the updated workflow to the Kubernetes cluster.
 kubectl apply -f argo/workflow.yaml
 ```{{exec}}
 
-Again, head to the [Argo console]({{TRAFFIC_HOST1_2746}}) to run the workflow.
+Again, head to the [Argo console]({{TRAFFIC_HOST1_32746}}) to run the workflow.
 
 ### Merge changes into main
 
@@ -80,4 +80,4 @@ And let's apply the newest version to the Kubernetes cluster.
 kubectl apply -f argo/workflow.yaml
 ```{{exec}}
 
-You can query the data in the [Superset console]({{TRAFFIC_HOST1_8088}}).
+You can query the data in the [Superset console]({{TRAFFIC_HOST1_32088}}).

@@ -34,6 +34,6 @@ spec:
     app: superset
   ports:
     - name: superset
-      port: 8088
+      nodePort: 32088
       targetPort: 8088
-  type: ClusterIP
+  type: nodePort
