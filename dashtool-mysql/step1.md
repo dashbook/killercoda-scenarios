@@ -11,7 +11,7 @@ As a first step, the following command will install Argo Workflows in the cluste
 ```bash
 kubectl create namespace argo
 
-kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.5/install.yaml
+kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.4/install.yaml
 
 kubectl patch deployment \
   argo-server \
