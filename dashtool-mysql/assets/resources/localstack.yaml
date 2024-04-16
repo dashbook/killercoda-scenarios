@@ -3,9 +3,17 @@ kind: ConfigMap
 metadata:
   name: localstack-init
 data:
-  buckets.sh: |
-    #!/usr/bin/env bash
-    awslocal s3 mb s3://example-mysql
+  bucket.py: |
+    import os, boto3
+    aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+    aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+    s3_client = boto3.client(
+      "s3",
+      endpoint_url=f"http://localhost:4566",
+      aws_access_key_id=aws_access_key_id,
+      aws_secret_access_key=aws_secret_access_key
+    )
+    s3_client.create_bucket(Bucket="example-mysql")
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -30,7 +38,7 @@ spec:
             defaultMode: 0777
       containers:
         - name: localstack
-          image: localstack/localstack:latest
+          image: localstack/localstack:s3-latest
           ports:
             - name: localstack
               containerPort: 4566
@@ -44,8 +52,6 @@ spec:
               value: us-east-1
             - name: AWS_ACCESS_KEY_ID
               value: AKIAIOSFODNN7EXAMPLE
-            - name: SERVICES
-              value: s3
           volumeMounts:
             - name: localstack-init
               mountPath: /etc/localstack/init/ready.d
