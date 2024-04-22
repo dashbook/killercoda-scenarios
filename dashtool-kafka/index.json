@@ -1,0 +1,61 @@
+{
+  "title": "Dashtool postgres example",
+  "description": "Build a lakehouse with dashtool by using data from a postgres database.",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Install Argo",
+        "text": "step1.md"
+      },
+      {
+        "title": "Create services",
+        "text": "step2.md"
+      },
+      {
+        "title": "Extract & Load",
+        "text": "step3.md"
+      },
+      {
+        "title": "Visualization",
+        "text": "step4.md"
+      },
+      {
+        "title": "Transform",
+        "text": "step5.md"
+      },
+      {
+        "title": "Analysis",
+        "text": "step6.md"
+      },
+      {
+        "title": "Refresh",
+        "text": "step7.md"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        { "file": "gitignore", "target": "~/"},
+        { "file": "dashtool.json", "target": "~/"},
+        { "file": "resources/*.yaml", "target": "~/"},
+        { "file": "resources/jobs/*.yaml", "target": "~/"},
+        { "file": "resources/*.sh", "target": "~/", "chmod": "+x"},
+        { "file": "bronze/inventory/*.*", "target": "~/"},
+        { "file": "silver/inventory/*.*", "target": "~/"},
+        { "file": "gold/inventory/*.*", "target": "~/"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  },
+  "interface": {
+    "layout": "ide"
+  }
+}

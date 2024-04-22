@@ -1,0 +1,135 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-properties
+data:
+  KAFKA_NODE_ID: '1'
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+  KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_HOST://localhost:9092,PLAINTEXT://kafka:9094'
+  KAFKA_PROCESS_ROLES: 'broker,controller'
+  KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:29093'
+  KAFKA_LISTENERS: 'CONTROLLER://:29093,PLAINTEXT_HOST://:9092,PLAINTEXT://:9094'
+  KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+  KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+  CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+  KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: '0'
+  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: '1'
+  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: '1'
+  KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+spec:
+  replicas: 1
+
+  revisionHistoryLimit: 3
+
+  selector:
+    matchLabels:
+      app: kafka
+
+  template:
+    metadata:
+      labels:
+        app: kafka
+
+    spec:
+      containers:
+        - name: server
+          image: apache/kafka:3.7.0
+          imagePullPolicy: IfNotPresent
+
+          envFrom:
+            - configMapRef:
+                name: kafka-properties
+
+          ports:
+            - containerPort: 9092
+              name: internal
+
+            - containerPort: 9094
+              name: external
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+spec:
+  selector:
+    app: kafka
+
+  ports:
+    - name: internal
+      port: 9092
+      protocol: TCP
+      targetPort: 9092
+
+    - name: external
+      port: 9094
+      protocol: TCP
+      targetPort: 9094
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-rest-properties
+data:
+  KAFKA_REST_HOSTNAME: kafka-rest
+  KAFKA_REST_BOOTSTRAP_SERVERS: kafka:9094
+  KAFKA_REST_LISTENERS: http://0.0.0.0:8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-rest
+  labels:
+    app: kafka-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-rest
+
+  template:
+    metadata:
+      labels:
+        app: kafka-rest
+
+    spec:
+      containers:
+        - name: server
+          image: confluentinc/cp-kafka-rest:6.0.0
+          imagePullPolicy: IfNotPresent
+
+          envFrom:
+            - configMapRef:
+                name: kafka-rest-properties
+
+          ports:
+            - containerPort: 8082
+              name: internal
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-rest-service
+  labels:
+    app: kafka-rest
+spec:
+  selector:
+    app: kafka-rest
+  type: NodePort
+  ports:
+    - name: internal
+      port: 8082
+      protocol: TCP
+      targetPort: 8082
+      nodePort: 32082
