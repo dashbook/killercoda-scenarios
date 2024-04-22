@@ -1,6 +1,6 @@
 {
-  "title": "Dashtool postgres example",
-  "description": "Build a lakehouse with dashtool by using data from a postgres database.",
+  "title": "Dashtool kafka example",
+  "description": "Build a lakehouse with dashtool by using data from a kafka cluster.",
   "details": {
     "intro": {
       "text": "intro.md",
