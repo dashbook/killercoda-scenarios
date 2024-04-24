@@ -10,7 +10,7 @@
       },
       "order_date": {
         "type": [
-          "integer",
+          "string",
           "null"
         ],
         "format": "date-time"
