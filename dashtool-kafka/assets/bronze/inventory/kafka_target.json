@@ -1,5 +1,5 @@
 {
-  "image": "dashbook/pipelinewise-tap-kafka:sql",
+  "image": "dashbook/tap-kafka:sql",
   "streams": {
     "orders": { 
       "identifier": "bronze.inventory.orders",

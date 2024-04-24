@@ -1,5 +1,29 @@
 {
-  "bootstrap_servers": "kafka:9092",
+  "bootstrap_servers": "kafka:9094",
   "group_id": "singer",
-  "topic": "orders"
+  "topic": "orders",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "order_date": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "date-time"
+      },
+      "purchaser": {
+        "type": "integer"
+      },
+      "quantity": {
+        "type": "integer"
+      },
+      "product_id": {
+        "type": "integer"
+      }
+    }
+  }
 }
