@@ -1,8 +1,8 @@
 ## Refresh data
 
 The great thing about using materialized views for the transformation is that they automatically keep themselves up-to-date. 
-To test this functionality, we will insert additional entries into our operational database and check how the data in the lakehouse changes.
-To insert the data to the postgres database, execute the following kubernetes job:
+To test this functionality, we will insert additional entries into our operational system and check how the data in the lakehouse changes.
+To insert the data into the Kafka server, execute the following kubernetes job:
 
 ```bash
 curl -X POST      -H "Content-Type: application/vnd.kafka.json.v2+json"      -H "Accept: application/vnd.kafka.v2+json"      --data '{"records":[

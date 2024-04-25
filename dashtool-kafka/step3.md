@@ -1,25 +1,9 @@
 ## Extract & Load (EL)
 
-Now that we have everything setup, we can start with the actual tutorial. In
-most cases, data systems are composed of a transactional and an analytical part.
-Transactional systems read and write single entries while analytical
-systems answer aggregate queries on multiple entries. In this tutorial, the
-postgres database, that we've setup, plays the role of the transactional system
-and the lakehouse will play the role of the analytical system. We will create
-the lakehouse by applying the Extract-Load-Transform (ELT) paradigm. By doing
-so, we will first copy the data from the transactional system to the analytical
+We will create the lakehouse by applying the Extract-Load-Transform (ELT) paradigm. By doing
+so, we will first copy the data from the operational systems to the analytical
 system without applying any transformations. This is called the EL step, which
 we will do next.
-
-### Kafka
-
-```bash
-kubectl exec -it deployments/kafka -- /opt/kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --topic orders
-```{{exec}}
-
-```bash
-curl -X POST      -H "Content-Type: application/vnd.kafka.json.v2+json"      -H "Accept: application/vnd.kafka.v2+json"      --data '{"records":[{"key": 1001, "value":{"id": 10001, "order_date": "2016-01-16T00:00:00+00:00", "purchaser": 1001, "quantity": 1, "product_id": 102}},{"key": 1002, "value":{"id": 10002, "order_date": "2016-01-17T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 105}},{"key": 1002, "value":{"id": 10003, "order_date": "2016-02-19T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 106}},{"key": 1003, "value":{"id": 10004, "order_date": "2016-02-21T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 107}}]}'      "http://localhost:32082/topics/orders"
-```{{exec}}
 
 ### Configure Singer Tap and Target
 
@@ -32,7 +16,9 @@ Singer Target to load it in to an Iceberg table.
 You can find the `tap.json` and `target.json` files in the `bronze/inventory`
 directory.
 
-#### Tap
+#### Kafka Tap
+
+#### Postgres Tap
 
 The `tap.json` file contains the configuration parameters for the
 [Pipelinewise Postgres Tap](https://github.com/transferwise/pipelinewise-tap-postgres).
@@ -46,12 +32,14 @@ Run the following command to create a logical replication slot for pipelinewise:
 kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('pipelinewise_postgres', 'wal2json');"
 ```{{exec}}
 
-#### Target
+#### Postgres Target
 
 The `target.json` file contains configuration parameters for the
 [Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
+
+#### Git repository
 
 Dashtool creates the entities in the lakehouse according to the local git repository.
 If the files exist on a branch in the git repository, it will create the same branch for the entity.
@@ -67,10 +55,11 @@ git branch bronze
 git checkout bronze
 ```{{exec}}
 
-Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool can create the corresponding tables.
+Let's add the the `kafka_tap.json`,`kafka_target.json`,`postgres_tap.json` and `postgres_target.json` file to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/tap.json bronze/inventory/target.json
+git add bronze/inventory/kafka_tap.json bronze/inventory/kafka_target.json
+git add bronze/inventory/postgres_tap.json bronze/inventory/postgres_target.json
 git commit -m "bronze"
 ```{{exec}}
 
