@@ -13,7 +13,7 @@ data:
       aws_access_key_id=aws_access_key_id,
       aws_secret_access_key=aws_secret_access_key
     )
-    s3_client.create_bucket(Bucket="example-postgres")
+    s3_client.create_bucket(Bucket="example-kafka")
 ---
 apiVersion: apps/v1
 kind: Deployment

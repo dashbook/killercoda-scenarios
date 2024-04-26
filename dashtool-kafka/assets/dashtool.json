@@ -5,7 +5,7 @@
   "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
   "awsEndpoint": "http://0.0.0.0:4566",
   "awsAllowHttp": "true",
-  "bucket": "s3://example-postgres",
+  "bucket": "s3://example-kafka",
   "secrets": {
     "postgres-secret": {
       "password": "POSTGRES_PASSWORD"

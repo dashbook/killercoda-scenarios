@@ -19,8 +19,11 @@ Typically the order events are created on the backend servers everytime an user 
 As you can see, an event contains information about the quantity, the time, the customer and the product.
 
 ```bash
-curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" -H "Accept: application/vnd.kafka.v2+json" \
-  --data '{"records":[{"key": 1001, "value":{"id": 10001, "order_date": "2016-01-16T00:00:00+00:00", "purchaser": 1001, "quantity": 1, "product_id": 102}},{"key": 1002, "value":{"id": 10002, "order_date": "2016-01-17T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 105}},{"key": 1002, "value":{"id": 10003, "order_date": "2016-02-19T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 106}},{"key": 1003, "value":{"id": 10004, "order_date": "2016-02-21T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 107}}]}' "http://localhost:32082/topics/orders"
+curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" -H "Accept: application/vnd.kafka.v2+json" --data '{"records":[
+{"key": 1001, "value":{"id": 10001, "order_date": "2016-01-16T00:00:00+00:00", "purchaser": 1001, "quantity": 1, "product_id": 102}},
+{"key": 1002, "value":{"id": 10002, "order_date": "2016-01-17T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 105}},
+{"key": 1002, "value":{"id": 10003, "order_date": "2016-02-19T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 106}},
+{"key": 1003, "value":{"id": 10004, "order_date": "2016-02-21T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 107}}]}' "http://localhost:32082/topics/orders"
 ```{{exec}}
 
 ### Postgres database
