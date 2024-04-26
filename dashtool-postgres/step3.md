@@ -19,12 +19,12 @@ between data sources and destinations, called Taps and Targets.
 
 Let's define a Singer Tap to extract the data from the Postgres database and a
 Singer Target to load it in to an Iceberg table. 
-You can find the `tap.json` and `target.json` files in the `bronze/inventory`
-directory.
+We'll define the Postgres tap and target in the `bronze/inventory/postgres.singer.json` file.
+The `image` field specifies which docker container to use for the extraction.
 
 #### Tap
 
-The `tap.json` file contains the configuration parameters for the
+The `tap` field contains the configuration parameters for the
 [Pipelinewise Postgres Tap](https://github.com/transferwise/pipelinewise-tap-postgres).
 It contains information about the connection, which schemas to extract and what
 kind of replication to use. One great thing about the Pipelinewise Postgres Tap
@@ -38,7 +38,7 @@ kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U post
 
 #### Target
 
-The `target.json` file contains configuration parameters for the
+The `target` field contains configuration parameters for the
 [Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
@@ -57,10 +57,10 @@ git branch bronze
 git checkout bronze
 ```{{exec}}
 
-Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool can create the corresponding tables.
+Let's add the the `prostgres.singer.json` file to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/tap.json bronze/inventory/target.json
+git add bronze/inventory/postgres.singer.json
 git commit -m "bronze"
 ```{{exec}}
 

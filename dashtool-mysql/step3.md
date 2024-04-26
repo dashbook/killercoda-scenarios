@@ -19,12 +19,12 @@ between data sources and destinations, called Taps and Targets.
 
 Let's define a Singer Tap to extract the data from the MySQL database and a
 Singer Target to load it in to an Iceberg table. 
-You can find the `tap.json` and `target.json` files in the `bronze/inventory`
-directory.
+We'll define the Mysql tap and target in the `bronze/inventory/mysql.singer.json` file.
+The `image` field specifies which docker container to use for the extraction.
 
 #### Tap
 
-The `tap.json` file contains the configuration parameters for the
+The `tap` field contains the configuration parameters for the
 [Pipelinewise MySQL Tap](https://github.com/transferwise/pipelinewise-tap-mysql).
 It contains information about the connection, which schemas to extract and what
 kind of replication to use. One great thing about the Pipelinewise MySQL Tap
@@ -33,7 +33,7 @@ of the data without difficult setup.
 
 #### Target
 
-The `target.json` file contains configuration parameters for the
+The `target` field contains configuration parameters for the
 [Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
@@ -52,10 +52,10 @@ git branch bronze
 git checkout bronze
 ```{{exec}}
 
-Let's add the the `tap.json` and `target.json` file to the bronze branch so that dashtool can create the corresponding tables.
+Let's add the the `mysql.singer.json` file to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/tap.json bronze/inventory/target.json
+git add bronze/inventory/mysql.singer.json
 git commit -m "bronze"
 ```{{exec}}
 

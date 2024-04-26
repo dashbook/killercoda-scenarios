@@ -11,16 +11,26 @@ Dashtool handles the EL step by leveraging the [Singer](www.singer.io)
 specification. The Singer specification defines a standard way to communicate
 between data sources and destinations, called Taps and Targets.
 
-Let's define a Singer Tap to extract the data from the Postgres database and a
+Let's define Singer Taps to extract the data from the Kafka server and Postgres database and a
 Singer Target to load it in to an Iceberg table. 
-You can find the `tap.json` and `target.json` files in the `bronze/inventory`
-directory.
 
-#### Kafka Tap
+#### Kafka Tap & Target
 
-#### Postgres Tap
+We'll define the Kafka tap and target in the `bronze/inventory/kafka.singer.json` file.
+The `image` field specifies which docker container to use for the extraction.
 
-The `tap.json` file contains the configuration parameters for the
+The `tap` field contains configuration parameters for the [Kafka Tap](https://github.com/dashbook/tap-kafka).
+It contains information about the connection, which topic wo extract and the schema for the topic.
+
+The `target` field contains configuration parameters for the
+[Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
+information about which tables to extract, which iceberg catalog to use and
+parameters for the S3 object store.
+
+#### Postgres Tap & Target
+
+The Postgres tap and target are defined in the `bronze/inventory/postgres.singer.json` file.
+The `tap` field contains the configuration parameters for the
 [Pipelinewise Postgres Tap](https://github.com/transferwise/pipelinewise-tap-postgres).
 It contains information about the connection, which schemas to extract and what
 kind of replication to use. One great thing about the Pipelinewise Postgres Tap
@@ -32,9 +42,7 @@ Run the following command to create a logical replication slot for pipelinewise:
 kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('pipelinewise_postgres', 'wal2json');"
 ```{{exec}}
 
-#### Postgres Target
-
-The `target.json` file contains configuration parameters for the
+The `target` field contains configuration parameters for the
 [Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
@@ -55,11 +63,10 @@ git branch bronze
 git checkout bronze
 ```{{exec}}
 
-Let's add the the `kafka_tap.json`,`kafka_target.json`,`postgres_tap.json` and `postgres_target.json` file to the bronze branch so that dashtool can create the corresponding tables.
+Let's add the the `kafka.singer.json` and `postgres.singer.json` files to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/kafka_tap.json bronze/inventory/kafka_target.json
-git add bronze/inventory/postgres_tap.json bronze/inventory/postgres_target.json
+git add bronze/inventory/kafka.singer.json bronze/inventory/postgres.singer.json
 git commit -m "bronze"
 ```{{exec}}
 
