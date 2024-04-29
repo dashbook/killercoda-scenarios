@@ -24,6 +24,9 @@ spec:
                 secretKeyRef:
                   name: superset-secret
                   key: admin-password
+          resources:
+            limits:
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service

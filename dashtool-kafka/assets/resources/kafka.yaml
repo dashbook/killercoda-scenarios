@@ -55,6 +55,9 @@ spec:
 
             - containerPort: 9094
               name: external
+          resources:
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -116,6 +119,9 @@ spec:
           ports:
             - containerPort: 8082
               name: internal
+          resources:
+            limits:
+              memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
