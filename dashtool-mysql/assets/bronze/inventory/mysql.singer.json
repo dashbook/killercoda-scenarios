@@ -1,24 +1,23 @@
 {
-  "image":"dashbook/pipelinewise-tap-mysql:sql",
+  "image":"dashbook/tap-mysql:sql",
   "tap": {
     "host": "mysql",
     "port": 3306,
     "user": "root",
     "password": "$MYSQL_PASSWORD",
-    "database": "inventory",
-    "filter_dbs": "inventory"
+    "database": "inventory"
   },
   "target": {
     "streams": {
-      "inventory-orders": { 
+      "inventory-inventory-orders": { 
         "identifier": "bronze.inventory.orders",
         "replication-method": "LOG_BASED"
       },
-      "inventory-customers": { 
+      "inventory-inventory-customers": { 
         "identifier": "bronze.inventory.customers",
         "replication-method": "LOG_BASED"
       },
-      "inventory-products": { 
+      "inventory-inventory-products": { 
         "identifier": "bronze.inventory.products",
         "replication-method": "LOG_BASED"
       }

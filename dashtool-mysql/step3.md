@@ -25,9 +25,9 @@ The `image` field specifies which docker container to use for the extraction.
 #### Tap
 
 The `tap` field contains the configuration parameters for the
-[Pipelinewise MySQL Tap](https://github.com/transferwise/pipelinewise-tap-mysql).
+[MySQL Tap](https://github.com/singer-io/tap-mysql).
 It contains information about the connection, which schemas to extract and what
-kind of replication to use. One great thing about the Pipelinewise MySQL Tap
+kind of replication to use. One great thing about the MySQL Tap
 is that it allows a log based replication which enables incremental extraction
 of the data without difficult setup.
 

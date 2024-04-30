@@ -25,15 +25,15 @@ The `image` field specifies which docker container to use for the extraction.
 #### Tap
 
 The `tap` field contains the configuration parameters for the
-[Pipelinewise Postgres Tap](https://github.com/transferwise/pipelinewise-tap-postgres).
+[Postgres Tap](https://github.com/singer-io/tap-postgres).
 It contains information about the connection, which schemas to extract and what
-kind of replication to use. One great thing about the Pipelinewise Postgres Tap
+kind of replication to use. One great thing about the Postgres Tap
 is that it allows a log based replication which enables incremental extraction
 of the data without difficult setup.
 
-Run the following command to create a logical replication slot for pipelinewise:
+Run the following command to create a logical replication slot for the tap:
 ```bash
-kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('pipelinewise_postgres', 'wal2json');"
+kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('stitch_postgres', 'wal2json');"
 ```{{exec}}
 
 #### Target

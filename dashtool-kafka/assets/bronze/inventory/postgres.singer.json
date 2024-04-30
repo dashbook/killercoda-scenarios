@@ -1,21 +1,19 @@
 {
-  "image":"dashbook/pipelinewise-tap-postgres:sql",
+  "image":"dashbook/tap-postgres:sql",
   "tap": {
     "host": "postgres",
     "port": 5432,
     "user": "postgres",
     "password": "$POSTGRES_PASSWORD",
-    "dbname": "postgres",
-    "filter_schemas": "inventory",
-    "logical_poll_total_seconds": 30
+    "dbname": "postgres"
   },
   "target": {
     "streams": {
-      "inventory-customers": { 
+      "postgres-inventory-customers": { 
         "identifier": "bronze.inventory.customers",
         "replication-method": "LOG_BASED"
       },
-      "inventory-products": { 
+      "postgres-inventory-products": { 
         "identifier": "bronze.inventory.products",
         "replication-method": "LOG_BASED"
       }
