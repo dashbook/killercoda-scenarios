@@ -33,7 +33,7 @@
     "streams": {
       "orders": { 
         "identifier": "bronze.inventory.orders",
-        "replication-method": "INCREMENTAL"
+        "replicationMethod": "INCREMENTAL"
       }
     },
     "catalogName": "bronze",

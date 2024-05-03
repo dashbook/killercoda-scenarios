@@ -11,11 +11,11 @@
     "streams": {
       "postgres-inventory-customers": { 
         "identifier": "bronze.inventory.customers",
-        "replication-method": "LOG_BASED"
+        "replicationMethod": "LOG_BASED"
       },
       "postgres-inventory-products": { 
         "identifier": "bronze.inventory.products",
-        "replication-method": "LOG_BASED"
+        "replicationMethod": "LOG_BASED"
       }
     },
     "catalogName": "bronze",

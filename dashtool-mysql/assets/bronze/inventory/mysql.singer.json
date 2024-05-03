@@ -11,15 +11,15 @@
     "streams": {
       "inventory-orders": { 
         "identifier": "bronze.inventory.orders",
-        "replication-method": "LOG_BASED"
+        "replicationMethod": "LOG_BASED"
       },
       "inventory-customers": { 
         "identifier": "bronze.inventory.customers",
-        "replication-method": "LOG_BASED"
+        "replicationMethod": "LOG_BASED"
       },
       "inventory-products": { 
         "identifier": "bronze.inventory.products",
-        "replication-method": "LOG_BASED"
+        "replicationMethod": "LOG_BASED"
       }
     },
     "catalogName": "bronze",
