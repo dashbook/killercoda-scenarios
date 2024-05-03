@@ -9,11 +9,11 @@
   },
   "target": {
     "streams": {
-      "postgres-inventory-customers": { 
+      "inventory-customers": { 
         "identifier": "bronze.inventory.customers",
         "replicationMethod": "LOG_BASED"
       },
-      "postgres-inventory-products": { 
+      "inventory-products": { 
         "identifier": "bronze.inventory.products",
         "replicationMethod": "LOG_BASED"
       }
