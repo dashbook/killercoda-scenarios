@@ -33,7 +33,9 @@ of the data without difficult setup.
 
 Run the following command to create a logical replication slot for the tap:
 ```bash
-kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('stitch_postgres', 'wal2json');"
+kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('airbyte_slot', 'pgoutput');"
+
+kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "CREATE PUBLICATION airbyte_publication FOR TABLE inventory.orders, inventory.customers, inventory.products;"
 ```{{exec}}
 
 #### Target
@@ -60,7 +62,7 @@ git checkout bronze
 Let's add the the `prostgres.singer.json` file to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/postgres.singer.json
+git add bronze/inventory/postgres.ingest.json
 git commit -m "bronze"
 ```{{exec}}
 

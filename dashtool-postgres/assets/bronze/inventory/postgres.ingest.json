@@ -1,0 +1,27 @@
+{
+  "image":"dashbook/source-postgres:sql",
+  "source": {
+    "host": "postgres",
+    "port": 5432,
+    "username": "postgres",
+    "password": "$POSTGRES_PASSWORD",
+    "database": "postgres",
+    "schemas": ["inventory"],
+    "ssl_mode": { "mode": "disable" },
+    "replication_method": {
+      "method": "CDC",
+      "replication_slot": "airbyte_slot",
+      "publication": "airbyte_publication"
+    }
+  },
+  "destination": {
+    "catalogName": "bronze",
+    "catalogUrl": "postgres://postgres:postgres@postgres:5432",
+    "awsRegion": "us-east-1",
+    "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+    "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
+    "awsEndpoint": "http://localstack:4566",
+    "awsAllowHttp": "true",
+    "bucket": "s3://example-postgres"
+  }
+}
