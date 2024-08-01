@@ -1,5 +1,5 @@
 echo "Installing dashtool..."
-wget -qO- https://github.com/dashbook/dashtool/releases/download/0.3.0/dashtool_0.3.0_x86_64-unknown-linux-musl.tar.gz | tar xvz
+wget -qO- https://github.com/dashbook/dashtool/releases/download/0.4.0/dashtool_0.4.0_x86_64-unknown-linux-musl.tar.gz | tar xvz
 echo DONE
 
 mv gitignore .gitignore

@@ -12,7 +12,7 @@ To get started, let's walk through what you can expect in this tutorial:
 
 1. **Data ingestion**: We'll utilize a MySQL database as our operational
    system and demonstrate how to extract data using one of the 200+ available
-   connectors compatible with the [Singer specification](http://www.singer.io).
+   [Airbyte connectors](https://airbyte.com).
    These connectors allow you to easily ingest data from various sources.
 2. **Declarative data pipeline**: You'll discover how to set up declarative data
    pipelines that will transform the ingested data using declarative SQL

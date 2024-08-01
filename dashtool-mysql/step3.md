@@ -11,36 +11,36 @@ so, we will first copy the data from the transactional system to the analytical
 system without applying any transformations. This is called the EL step, which
 we will do next.
 
-### Configure Singer Tap and Target
+### Configure Airbyte Source and Destination
 
-Dashtool handles the EL step by leveraging the [Singer](www.singer.io)
-specification. The Singer specification defines a standard way to communicate
-between data sources and destinations, called Taps and Targets.
+Dashtool handles the EL step by leveraging the [Airbyte](https://airbyte.com)
+specification. The Airbyte specification defines a standard way to communicate
+between data sources and destinations.
 
-Let's define a Singer Tap to extract the data from the MySQL database and a
-Singer Target to load it in to an Iceberg table. 
-We'll define the Mysql tap and target in the `bronze/inventory/mysql.singer.json` file.
+Let's define a Airbyte Source to extract the data from the MySQL database and a
+Airbyte Destination to load it in to an Iceberg table. 
+We'll define the Mysql source and destination in the `bronze/inventory/mysql.ingest.json` file.
 The `image` field specifies which docker container to use for the extraction.
 
-#### Tap
+#### Source
 
-The `tap` field contains the configuration parameters for the
-[MySQL Tap](https://github.com/singer-io/tap-mysql).
+The `source` field contains the configuration parameters for the
+[MySQL Source](https://github.com/dashbook/airbyte/blob/master/docs/integrations/sources/mysql.md).
 It contains information about the connection, which schemas to extract and what
-kind of replication to use. One great thing about the MySQL Tap
+kind of replication to use. One great thing about the MySQL Source
 is that it allows a log based replication which enables incremental extraction
 of the data without difficult setup.
 
-#### Target
+#### Destination
 
-The `target` field contains configuration parameters for the
-[Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
+The `destination` field contains configuration parameters for the
+[Iceberg Destination](https://github.com/dashbook/destination-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
 
 Dashtool creates the entities in the lakehouse according to the local git repository.
 If the files exist on a branch in the git repository, it will create the same branch for the entity.
-So to create the Iceberg tables for the Tap and Target we have to add the `tap.json` and `target.json` files to a git branch.
+So to create the Iceberg tables for the Source and Destination we have to add the `mysql.ingest.json` file to a git branch.
 For that we create a git repository and create a bronze branch.
 
 ```
@@ -52,10 +52,10 @@ git branch bronze
 git checkout bronze
 ```{{exec}}
 
-Let's add the the `mysql.singer.json` file to the bronze branch so that dashtool can create the corresponding tables.
+Let's add the the `mysql.ingest.json` file to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/mysql.singer.json
+git add bronze/inventory/mysql.ingest.json
 git commit -m "bronze"
 ```{{exec}}
 
