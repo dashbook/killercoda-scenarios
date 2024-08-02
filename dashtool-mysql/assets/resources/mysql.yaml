@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: quay.io/debezium/example-mysql:1.9
+          image: ghcr.io/dashbook/example-mysql:main
           ports:
             - containerPort: 3306
           volumeMounts:
