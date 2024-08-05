@@ -53,7 +53,7 @@
     }
   },
   "backend": {
-    "imageid": "kubernetes-kubeadm-1node-4GB"
+    "imageid": "kubernetes-kubeadm-2nodes"
   },
   "interface": {
     "layout": "ide"
