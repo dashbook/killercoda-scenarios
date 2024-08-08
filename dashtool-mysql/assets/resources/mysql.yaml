@@ -24,7 +24,8 @@ spec:
             - name: mysql-init
               mountPath: /docker-entrypoint-initdb.d/
             - name: mysql-conf
-              mountPath: /etc/mysql/conf.d/
+              mountPath: /etc/mysql/conf.d/mysql.cnf
+              subPath: mysql.cnf
           env:
             - name: MYSQL_USER
               value: mysqluser
