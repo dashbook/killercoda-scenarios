@@ -15,12 +15,16 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: ghcr.io/dashbook/example-mysql:main
+          image: mysql:8.2
           ports:
             - containerPort: 3306
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql/
+            - name: mysql-init
+              mountPath: /docker-entrypoint-initdb.d/
+            - name: mysql-conf
+              mountPath: /etc/mysql/conf.d/
           env:
             - name: MYSQL_USER
               value: mysqluser
@@ -34,6 +38,13 @@ spec:
                 secretKeyRef:
                   key: password
                   name: mysql-secret
+      volumes:
+        - name: mysql-init
+          configMap:
+            name: mysql-init
+        - name: mysql-conf
+          configMap:
+            name: mysql-conf
   volumeClaimTemplates:
     - metadata:
         name: mysql-data
@@ -56,3 +67,228 @@ spec:
       port: 3306
       targetPort: 3306
   type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init
+data:
+  inventory.sql : |
+    # In production you would almost certainly limit the replication user must be on the follower (slave) machine,
+    # to prevent other clients accessing the log from other machines. For example, 'replicator'@'follower.acme.com'.
+    #
+    # However, this grant is equivalent to specifying *any* hosts, which makes this easier since the docker host
+    # is not easily known to the Docker container. But don't do this in production.
+    #
+    CREATE USER 'replicator' IDENTIFIED BY 'replpass';
+    CREATE USER 'debezium' IDENTIFIED BY 'dbz';
+    GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'replicator';
+    GRANT SELECT, RELOAD, SHOW DATABASES, REPLICATION SLAVE, REPLICATION CLIENT  ON *.* TO 'debezium';
+
+    # Create the database that we'll use to populate data and watch the effect in the binlog
+    CREATE DATABASE inventory;
+    GRANT ALL PRIVILEGES ON inventory.* TO 'mysqluser'@'%';
+
+    # Switch to this database
+    USE inventory;
+
+    # Create and populate our products using a single insert with many rows
+    CREATE TABLE products (
+      id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description VARCHAR(512),
+      weight FLOAT
+    );
+    ALTER TABLE products AUTO_INCREMENT = 101;
+
+    INSERT INTO products
+    VALUES (default,"scooter","Small 2-wheel scooter",3.14),
+           (default,"car battery","12V car battery",8.1),
+           (default,"12-pack drill bits","12-pack of drill bits with sizes ranging from #40 to #3",0.8),
+           (default,"hammer","12oz carpenter's hammer",0.75),
+           (default,"hammer","14oz carpenter's hammer",0.875),
+           (default,"hammer","16oz carpenter's hammer",1.0),
+           (default,"rocks","box of assorted rocks",5.3),
+           (default,"jacket","water resistent black wind breaker",0.1),
+           (default,"spare tire","24 inch spare tire",22.2);
+
+    # Create and populate the products on hand using multiple inserts
+    CREATE TABLE products_on_hand (
+      product_id INTEGER NOT NULL PRIMARY KEY,
+      quantity INTEGER NOT NULL,
+      FOREIGN KEY (product_id) REFERENCES products(id)
+    );
+
+    INSERT INTO products_on_hand VALUES (101,3);
+    INSERT INTO products_on_hand VALUES (102,8);
+    INSERT INTO products_on_hand VALUES (103,18);
+    INSERT INTO products_on_hand VALUES (104,4);
+    INSERT INTO products_on_hand VALUES (105,5);
+    INSERT INTO products_on_hand VALUES (106,0);
+    INSERT INTO products_on_hand VALUES (107,44);
+    INSERT INTO products_on_hand VALUES (108,2);
+    INSERT INTO products_on_hand VALUES (109,5);
+
+    # Create some customers ...
+    CREATE TABLE customers (
+      id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      first_name VARCHAR(255) NOT NULL,
+      last_name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE KEY
+    ) AUTO_INCREMENT=1001;
+
+
+    INSERT INTO customers
+    VALUES (default,"Sally","Thomas","sally.thomas@acme.com"),
+           (default,"George","Bailey","gbailey@foobar.com"),
+           (default,"Edward","Walker","ed@walker.com"),
+           (default,"Anne","Kretchmar","annek@noanswer.org"),
+           (default,'John','Smith','jsmith@foobar.com'),
+           (default,'Ellen','Parker','Ellen.parker@noanswer.org');
+
+    # Create some fake addresses
+    CREATE TABLE addresses (
+      id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      customer_id INTEGER NOT NULL,
+      street VARCHAR(255) NOT NULL,
+      city VARCHAR(255) NOT NULL,
+      state VARCHAR(255) NOT NULL,
+      zip VARCHAR(255) NOT NULL,
+      type enum('SHIPPING','BILLING','LIVING') NOT NULL,
+      FOREIGN KEY address_customer (customer_id) REFERENCES customers(id)
+    ) AUTO_INCREMENT = 10;
+
+    INSERT INTO addresses
+    VALUES (default,1001,'3183 Moore Avenue','Euless','Texas','76036','SHIPPING'),
+           (default,1001,'2389 Hidden Valley Road','Harrisburg','Pennsylvania','17116','BILLING'),
+           (default,1002,'281 Riverside Drive','Augusta','Georgia','30901','BILLING'),
+           (default,1003,'3787 Brownton Road','Columbus','Mississippi','39701','SHIPPING'),
+           (default,1003,'2458 Lost Creek Road','Bethlehem','Pennsylvania','18018','SHIPPING'),
+           (default,1003,'4800 Simpson Square','Hillsdale','Oklahoma','73743','BILLING'),
+           (default,1004,'1289 University Hill Road','Canehill','Arkansas','72717','LIVING');
+
+    # Create some very simple orders
+    CREATE TABLE orders (
+      order_number INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      order_date DATE NOT NULL,
+      purchaser INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      FOREIGN KEY order_customer (purchaser) REFERENCES customers(id),
+      FOREIGN KEY ordered_product (product_id) REFERENCES products(id)
+    ) AUTO_INCREMENT = 10001;
+
+    INSERT INTO orders
+    VALUES (default, '2016-01-16', 1001, 1, 102),
+           (default, '2016-01-17', 1002, 2, 105),
+           (default, '2016-02-19', 1002, 2, 106),
+           (default, '2016-02-21', 1003, 1, 107),
+           (default, '2016-03-01', 1001, 3, 102),
+           (default, '2016-03-05', 1004, 1, 108),
+           (default, '2016-03-10', 1002, 2, 109),
+           (default, '2016-03-12', 1003, 1, 105),
+           (default, '2016-03-15', 1001, 2, 107),
+           (default, '2016-03-18', 1005, 1, 101),
+           (default, '2016-03-20', 1004, 3, 106),
+           (default, '2016-03-22', 1002, 1, 103),
+           (default, '2016-03-25', 1003, 2, 108),
+           (default, '2016-03-28', 1001, 1, 109),
+           (default, '2016-04-01', 1006, 2, 102),
+           (default, '2016-04-03', 1002, 1, 105),
+           (default, '2016-04-05', 1004, 3, 109),
+           (default, '2016-04-08', 1003, 1, 107),
+           (default, '2016-04-10', 1001, 2, 101),
+           (default, '2016-04-12', 1005, 1, 103),
+           (default, '2016-04-15', 1006, 2, 108),
+           (default, '2016-04-18', 1002, 3, 106),
+           (default, '2016-04-20', 1004, 1, 102),
+           (default, '2016-04-22', 1003, 2, 109),
+           (default, '2016-04-25', 1001, 1, 105),
+           (default, '2016-04-28', 1005, 2, 107),
+           (default, '2016-05-01', 1006, 1, 101),
+           (default, '2016-05-03', 1002, 3, 103),
+           (default, '2016-05-05', 1004, 2, 108),
+           (default, '2016-05-08', 1003, 1, 106),
+           (default, '2016-05-10', 1001, 2, 109),
+           (default, '2016-05-12', 1005, 1, 102),
+           (default, '2016-05-15', 1006, 2, 105),
+           (default, '2016-05-18', 1002, 1, 107),
+           (default, '2016-05-20', 1004, 3, 101),
+           (default, '2016-05-22', 1003, 2, 103),
+           (default, '2016-05-25', 1001, 1, 108),
+           (default, '2016-05-28', 1005, 2, 109),
+           (default, '2016-06-01', 1006, 1, 106),
+           (default, '2016-06-03', 1002, 2, 102),
+           (default, '2016-06-05', 1004, 1, 105),
+           (default, '2016-06-08', 1003, 3, 107),
+           (default, '2016-06-10', 1001, 2, 101),
+           (default, '2016-06-12', 1005, 1, 103),
+           (default, '2016-06-15', 1006, 2, 108),
+           (default, '2016-06-18', 1002, 1, 109),
+           (default, '2016-06-20', 1004, 2, 106),
+           (default, '2016-06-22', 1003, 1, 102),
+           (default, '2016-06-25', 1001, 3, 105);
+
+    # Create table with Spatial/Geometry type
+    CREATE TABLE geom (
+    	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    	g GEOMETRY NOT NULL,
+    	h GEOMETRY);
+
+    INSERT INTO geom
+    VALUES(default, ST_GeomFromText('POINT(1 1)'), NULL),
+          (default, ST_GeomFromText('LINESTRING(2 1, 6 6)'), NULL),
+          (default, ST_GeomFromText('POLYGON((0 5, 2 5, 2 7, 0 7, 0 5))'), NULL);
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-conf
+data:
+  mysql.cnf: |
+    # For advice on how to change settings please see
+    # https://dev.mysql.com/doc/refman/8.2/en/server-configuration-defaults.html
+
+    [mysqld]
+    #
+    # Remove leading # and set to the amount of RAM for the most important data
+    # cache in MySQL. Start at 70% of total RAM for dedicated server, else 10%.
+    # innodb_buffer_pool_size = 128M
+    #
+    # Remove leading # to turn on a very important data integrity option: logging
+    # changes to the binary log between backups.
+    # log_bin
+    #
+    # Remove leading # to set options mainly useful for reporting servers.
+    # The server defaults are faster for transactions and fast SELECTs.
+    # Adjust sizes as needed, experiment to find the optimal values.
+    # join_buffer_size = 128M
+    # sort_buffer_size = 2M
+    # read_rnd_buffer_size = 2M
+    skip-host-cache
+    skip-name-resolve
+    #datadir=/var/lib/mysql
+    #socket=/var/lib/mysql/mysql.sock
+    #secure-file-priv=/var/lib/mysql-files
+    user=mysql
+
+    # Disabling symbolic-links is recommended to prevent assorted security risks
+    symbolic-links=0
+
+    #log-error=/var/log/mysqld.log
+    #pid-file=/var/run/mysqld/mysqld.pid
+
+    # ----------------------------------------------
+    # Enable the binlog for replication & CDC
+    # ----------------------------------------------
+
+    # Enable binary replication log and set the prefix, expiration, and log format.
+    # The prefix is arbitrary, expiration can be short for integration tests but would
+    # be longer on a production system. Row-level info is required for ingest to work.
+    # Server ID is required, but this will vary on production systems
+    server-id         = 223344
+    log_bin           = mysql-bin
+    binlog_expire_logs_seconds  = 86400
+    binlog_format     = row
+
+    default_authentication_plugin = mysql_native_password
