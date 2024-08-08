@@ -1,6 +1,6 @@
 select
   sum(o.quantity * p.weight),
-  date_trunc('month', o.date) as month
+  date_trunc('month', o.date::timestamp)::date as month
 from 
   silver.inventory.fact_order as o
 join
