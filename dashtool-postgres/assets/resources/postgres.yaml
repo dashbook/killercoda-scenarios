@@ -15,12 +15,14 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: quay.io/debezium/example-postgres:1.9
+          image: quay.io/debezium/postgres:16
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
+            - name: postgres-init
+              mountPath: /docker-entrypoint-initdb.d/
           env:
             - name: POSTGRES_USER
               value: postgres
@@ -29,6 +31,10 @@ spec:
                 secretKeyRef:
                   key: password
                   name: postgres-secret
+      volumes:
+        - name: postgres-init
+          configMap:
+            name: postgres-init
   volumeClaimTemplates:
     - metadata:
         name: postgres-data
@@ -51,3 +57,148 @@ spec:
       port: 5432
       targetPort: 5432
   type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  inventory.sql : |
+    -- Create the schema that we'll use to populate data and watch the effect in the WAL
+    CREATE SCHEMA inventory;
+    SET search_path TO inventory;
+
+    -- enable PostGis
+    CREATE EXTENSION postgis;
+
+    -- Create and populate our products using a single insert with many rows
+    CREATE TABLE products (
+      id SERIAL NOT NULL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description VARCHAR(512),
+      weight FLOAT
+    );
+    ALTER SEQUENCE products_id_seq RESTART WITH 101;
+    ALTER TABLE products REPLICA IDENTITY FULL;
+
+    INSERT INTO products
+    VALUES (default,'scooter','Small 2-wheel scooter',3.14),
+           (default,'car battery','12V car battery',8.1),
+           (default,'12-pack drill bits','12-pack of drill bits with sizes ranging from #40 to #3',0.8),
+           (default,'hammer','12oz carpenter''s hammer',0.75),
+           (default,'hammer','14oz carpenter''s hammer',0.875),
+           (default,'hammer','16oz carpenter''s hammer',1.0),
+           (default,'rocks','box of assorted rocks',5.3),
+           (default,'jacket','water resistent black wind breaker',0.1),
+           (default,'spare tire','24 inch spare tire',22.2);
+
+    -- Create and populate the products on hand using multiple inserts
+    CREATE TABLE products_on_hand (
+      product_id INTEGER NOT NULL PRIMARY KEY,
+      quantity INTEGER NOT NULL,
+      FOREIGN KEY (product_id) REFERENCES products(id)
+    );
+    ALTER TABLE products_on_hand REPLICA IDENTITY FULL;
+
+    INSERT INTO products_on_hand VALUES (101,3);
+    INSERT INTO products_on_hand VALUES (102,8);
+    INSERT INTO products_on_hand VALUES (103,18);
+    INSERT INTO products_on_hand VALUES (104,4);
+    INSERT INTO products_on_hand VALUES (105,5);
+    INSERT INTO products_on_hand VALUES (106,0);
+    INSERT INTO products_on_hand VALUES (107,44);
+    INSERT INTO products_on_hand VALUES (108,2);
+    INSERT INTO products_on_hand VALUES (109,5);
+
+    -- Create some customers ...
+    CREATE TABLE customers (
+      id SERIAL NOT NULL PRIMARY KEY,
+      first_name VARCHAR(255) NOT NULL,
+      last_name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE
+    );
+    ALTER SEQUENCE customers_id_seq RESTART WITH 1001;
+    ALTER TABLE customers REPLICA IDENTITY FULL;
+
+    INSERT INTO customers
+    VALUES (default,'Sally','Thomas','sally.thomas@acme.com'),
+           (default,'George','Bailey','gbailey@foobar.com'),
+           (default,'Edward','Walker','ed@walker.com'),
+           (default,'Anne','Kretchmar','annek@noanswer.org'),
+           (default,'John','Smith','jsmith@foobar.com'),
+           (default,'Ellen','Parker','Ellen.parker@noanswer.org');
+
+    -- Create some very simple orders
+    CREATE TABLE orders (
+      id SERIAL NOT NULL PRIMARY KEY,
+      order_date DATE NOT NULL,
+      purchaser INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      FOREIGN KEY (purchaser) REFERENCES customers(id),
+      FOREIGN KEY (product_id) REFERENCES products(id)
+    );
+    ALTER SEQUENCE orders_id_seq RESTART WITH 10001;
+    ALTER TABLE orders REPLICA IDENTITY FULL;
+
+    INSERT INTO orders
+    VALUES (default, '2016-01-16', 1001, 1, 102),
+           (default, '2016-01-17', 1002, 2, 105),
+           (default, '2016-02-19', 1002, 2, 106),
+           (default, '2016-02-21', 1003, 1, 107),
+           (default, '2016-03-01', 1001, 3, 102),
+           (default, '2016-03-05', 1004, 1, 108),
+           (default, '2016-03-10', 1002, 2, 109),
+           (default, '2016-03-12', 1003, 1, 105),
+           (default, '2016-03-15', 1001, 2, 107),
+           (default, '2016-03-18', 1005, 1, 101),
+           (default, '2016-03-20', 1004, 3, 106),
+           (default, '2016-03-22', 1002, 1, 103),
+           (default, '2016-03-25', 1003, 2, 108),
+           (default, '2016-03-28', 1001, 1, 109),
+           (default, '2016-04-01', 1006, 2, 102),
+           (default, '2016-04-03', 1002, 1, 105),
+           (default, '2016-04-05', 1004, 3, 109),
+           (default, '2016-04-08', 1003, 1, 107),
+           (default, '2016-04-10', 1001, 2, 101),
+           (default, '2016-04-12', 1005, 1, 103),
+           (default, '2016-04-15', 1006, 2, 108),
+           (default, '2016-04-18', 1002, 3, 106),
+           (default, '2016-04-20', 1004, 1, 102),
+           (default, '2016-04-22', 1003, 2, 109),
+           (default, '2016-04-25', 1001, 1, 105),
+           (default, '2016-04-28', 1005, 2, 107),
+           (default, '2016-05-01', 1006, 1, 101),
+           (default, '2016-05-03', 1002, 3, 103),
+           (default, '2016-05-05', 1004, 2, 108),
+           (default, '2016-05-08', 1003, 1, 106),
+           (default, '2016-05-10', 1001, 2, 109),
+           (default, '2016-05-12', 1005, 1, 102),
+           (default, '2016-05-15', 1006, 2, 105),
+           (default, '2016-05-18', 1002, 1, 107),
+           (default, '2016-05-20', 1004, 3, 101),
+           (default, '2016-05-22', 1003, 2, 103),
+           (default, '2016-05-25', 1001, 1, 108),
+           (default, '2016-05-28', 1005, 2, 109),
+           (default, '2016-06-01', 1006, 1, 106),
+           (default, '2016-06-03', 1002, 2, 102),
+           (default, '2016-06-05', 1004, 1, 105),
+           (default, '2016-06-08', 1003, 3, 107),
+           (default, '2016-06-10', 1001, 2, 101),
+           (default, '2016-06-12', 1005, 1, 103),
+           (default, '2016-06-15', 1006, 2, 108),
+           (default, '2016-06-18', 1002, 1, 109),
+           (default, '2016-06-20', 1004, 2, 106),
+           (default, '2016-06-22', 1003, 1, 102),
+           (default, '2016-06-25', 1001, 3, 105);
+
+    -- Create table with Spatial/Geometry type
+    CREATE TABLE geom (
+            id SERIAL NOT NULL PRIMARY KEY,
+            g GEOMETRY NOT NULL,
+            h GEOMETRY);
+
+    INSERT INTO geom
+    VALUES(default, ST_GeomFromText('POINT(1 1)')),
+          (default, ST_GeomFromText('LINESTRING(2 1, 6 6)')),
+          (default, ST_GeomFromText('POLYGON((0 5, 2 5, 2 7, 0 7, 0 5))'));
