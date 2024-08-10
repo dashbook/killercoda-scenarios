@@ -22,7 +22,8 @@ spec:
             - name: mysql-data
               mountPath: /var/lib/mysql/
             - name: mysql-init
-              mountPath: /docker-entrypoint-initdb.d/
+              mountPath: /docker-entrypoint-initdb.d/inventory.sql
+              subPath: inventory.sql
             - name: mysql-conf
               mountPath: /etc/mysql/conf.d/mysql.cnf
               subPath: mysql.cnf
