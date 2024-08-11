@@ -15,7 +15,7 @@
     "catalogName": "bronze",
     "catalogUrl": "mysql://mysqluser:$MYSQL_PASSWORD@mysql:3306/inventory",
     "awsRegion": "us-east-1",
-    "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+    "awsAccessKeyId": "$AWS_ACCESS_KEY_ID",
     "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
     "awsEndpoint": "http://localstack:4566",
     "awsAllowHttp": "true",

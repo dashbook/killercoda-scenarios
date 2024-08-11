@@ -14,7 +14,8 @@ kubectl create secret generic arrow-flight-secret --from-literal=password=flight
 
 kubectl create secret generic superset-secret --from-literal=admin-password=password
 
-kubectl create secret generic aws-secret --from-literal=secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+kubectl create secret generic aws-secret --from-literal=access_key_id=AKIAIOSFODNN7EXAMPLE --from-literal=secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY 
+export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE 
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```{{exec}}
 

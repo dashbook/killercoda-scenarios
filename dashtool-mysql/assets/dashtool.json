@@ -2,7 +2,7 @@
   "plugin": "sql",
   "catalogUrl": "mysql://mysqluser:$MYSQL_PASSWORD@0.0.0.0:3306/inventory",
   "awsRegion": "us-east-1",
-  "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+  "awsAccessKeyId": "$AWS_ACCESS_KEY_ID",
   "awsEndpoint": "http://0.0.0.0:4566",
   "awsAllowHttp": "true",
   "bucket": "s3://example-mysql",
@@ -11,6 +11,7 @@
       "password": "MYSQL_PASSWORD"
     },
     "aws-secret": {
+      "access_key_id": "AWS_ACCESS_KEY_ID",
       "secret_access_key": "AWS_SECRET_ACCESS_KEY"
     }
   },

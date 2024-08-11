@@ -6,7 +6,6 @@ data:
   bucket: example-mysql
   tls-domain: arrow-flight
   flight-user: flight_username
-  aws-access-key-id: AKIAIOSFODNN7EXAMPLE
   aws-default-region: us-east-1
   aws-endpoint: "http://localstack:4566"
   aws-allow-http: "TRUE"
@@ -59,9 +58,9 @@ spec:
                   key: password
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
-                configMapKeyRef:
-                  name: arrow-flight
-                  key: aws-access-key-id
+                secretKeyRef:
+                  name: aws-secret
+                  key: access_key_id
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
