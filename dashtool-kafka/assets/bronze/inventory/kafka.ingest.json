@@ -1,0 +1,24 @@
+{
+  "image":"dashbook/source-kafka:sql",
+  "source": {
+    "bootstrap_servers": "kafka:9094",
+    "subscription": {
+      "subscription_type": "subscribe",
+      "topic_pattern": "orders"
+    },
+    "protocol": {
+      "security_protocol": "PLAINTEXT"
+    },
+    "group_id": "airbyte"
+  },
+  "destination": {
+    "catalogName": "bronze",
+    "catalogUrl": "postgres://postgres:postgres@postgres:5432",
+    "awsRegion": "us-east-1",
+    "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+    "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
+    "awsEndpoint": "http://localstack:4566",
+    "awsAllowHttp": "true",
+    "bucket": "s3://example-kafka"
+  }
+}

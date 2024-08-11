@@ -2,7 +2,7 @@
   "plugin": "sql",
   "catalogUrl": "postgres://postgres:$POSTGRES_PASSWORD@0.0.0.0:5432",
   "awsRegion": "us-east-1",
-  "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+  "awsAccessKeyId": "$AWS_ACCESS_KEY_ID",
   "awsEndpoint": "http://0.0.0.0:4566",
   "awsAllowHttp": "true",
   "bucket": "s3://example-postgres",
@@ -11,7 +11,8 @@
       "password": "POSTGRES_PASSWORD"
     },
     "aws-secret": {
-      "secret_access_key": "AWS_SECRET_ACCESS_KEY"
+      "secret_access_key": "AWS_SECRET_ACCESS_KEY",
+      "access_key_id": "AWS_ACCESS_KEY_ID"
     }
   },
   "env": {
