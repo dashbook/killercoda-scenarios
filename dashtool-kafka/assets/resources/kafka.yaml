@@ -55,9 +55,13 @@ spec:
 
             - containerPort: 9094
               name: external
-          resources:
-            limits:
-              memory: 512Mi
+          volumeMounts:
+            - name: kafka-messages
+              mountPath: /tmp/kafka/
+      volumes:
+        - name: kafka-messages
+          configMap:
+            name: kafka-messages
 ---
 apiVersion: v1
 kind: Service
@@ -83,59 +87,34 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kafka-rest-properties
+  name: kafka-messages
 data:
-  KAFKA_REST_HOSTNAME: kafka-rest
-  KAFKA_REST_BOOTSTRAP_SERVERS: kafka:9094
-  KAFKA_REST_LISTENERS: http://0.0.0.0:8082
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: kafka-rest
-  labels:
-    app: kafka-rest
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kafka-rest
-
-  template:
-    metadata:
-      labels:
-        app: kafka-rest
-
-    spec:
-      containers:
-        - name: server
-          image: confluentinc/cp-kafka-rest:6.0.0
-          imagePullPolicy: IfNotPresent
-
-          envFrom:
-            - configMapRef:
-                name: kafka-rest-properties
-
-          ports:
-            - containerPort: 8082
-              name: internal
-          resources:
-            limits:
-              memory: 128Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kafka-rest-service
-  labels:
-    app: kafka-rest
-spec:
-  selector:
-    app: kafka-rest
-  type: NodePort
-  ports:
-    - name: internal
-      port: 8082
-      protocol: TCP
-      targetPort: 8082
-      nodePort: 32082
+  messages1.txt: |
+    {"key": 1001, "value":{"id": 10001, "order_date": "2016-01-16T00:00:00+00:00", "purchaser": 1001, "quantity": 1, "product_id": 102}}
+    {"key": 1002, "value":{"id": 10002, "order_date": "2016-01-17T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 105}}
+    {"key": 1003, "value":{"id": 10003, "order_date": "2016-02-19T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 106}}
+    {"key": 1004, "value":{"id": 10004, "order_date": "2016-02-21T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 107}}
+    {"key": 1005, "value":{"id": 10005, "order_date": "2016-03-01T00:00:00+00:00", "purchaser": 1001, "quantity": 3, "product_id": 108}}
+    {"key": 1006, "value":{"id": 10006, "order_date": "2016-03-05T00:00:00+00:00", "purchaser": 1004, "quantity": 2, "product_id": 109}}
+    {"key": 1007, "value":{"id": 10007, "order_date": "2016-03-10T00:00:00+00:00", "purchaser": 1005, "quantity": 1, "product_id": 103}}
+    {"key": 1008, "value":{"id": 10008, "order_date": "2016-03-15T00:00:00+00:00", "purchaser": 1002, "quantity": 3, "product_id": 102}}
+    {"key": 1009, "value":{"id": 10009, "order_date": "2016-04-01T00:00:00+00:00", "purchaser": 1006, "quantity": 2, "product_id": 105}}
+    {"key": 1010, "value":{"id": 10010, "order_date": "2016-04-05T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 103}}
+    {"key": 1011, "value":{"id": 10011, "order_date": "2016-04-10T00:00:00+00:00", "purchaser": 1002, "quantity": 3, "product_id": 101}}
+    {"key": 1012, "value":{"id": 10012, "order_date": "2016-04-15T00:00:00+00:00", "purchaser": 1004, "quantity": 2, "product_id": 104}}
+    {"key": 1013, "value":{"id": 10013, "order_date": "2016-05-01T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 103}}
+    {"key": 1014, "value":{"id": 10014, "order_date": "2016-05-21T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 107}}
+    {"key": 1015, "value":{"id": 10015, "order_date": "2016-06-01T00:00:00+00:00", "purchaser": 1001, "quantity": 3, "product_id": 108}}
+    {"key": 1016, "value":{"id": 10016, "order_date": "2016-06-05T00:00:00+00:00", "purchaser": 1004, "quantity": 2, "product_id": 109}}
+    {"key": 1017, "value":{"id": 10017, "order_date": "2016-06-10T00:00:00+00:00", "purchaser": 1005, "quantity": 1, "product_id": 103}}
+    {"key": 1018, "value":{"id": 10018, "order_date": "2016-06-15T00:00:00+00:00", "purchaser": 1002, "quantity": 3, "product_id": 102}}
+    {"key": 1019, "value":{"id": 10019, "order_date": "2016-07-01T00:00:00+00:00", "purchaser": 1006, "quantity": 2, "product_id": 105}}
+    {"key": 1020, "value":{"id": 10020, "order_date": "2016-07-05T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 103}}
+    {"key": 1021, "value":{"id": 10021, "order_date": "2016-07-10T00:00:00+00:00", "purchaser": 1002, "quantity": 3, "product_id": 101}}
+    {"key": 1022, "value":{"id": 10022, "order_date": "2016-07-15T00:00:00+00:00", "purchaser": 1004, "quantity": 2, "product_id": 104}}
+    {"key": 1023, "value":{"id": 10023, "order_date": "2016-08-01T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 103}}
+  messages2.txt: |
+    {"key": 1024, "value":{"id": 10024, "order_date": "2017-01-16T00:00:00+00:00", "purchaser": 1001, "quantity": 1, "product_id": 102}}
+    {"key": 1025, "value":{"id": 10025, "order_date": "2017-01-17T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 105}}
+    {"key": 1026, "value":{"id": 10026, "order_date": "2017-02-19T00:00:00+00:00", "purchaser": 1002, "quantity": 2, "product_id": 106}}
+    {"key": 1027, "value":{"id": 10027, "order_date": "2017-02-21T00:00:00+00:00", "purchaser": 1003, "quantity": 1, "product_id": 107}}
