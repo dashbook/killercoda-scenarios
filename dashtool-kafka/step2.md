@@ -18,7 +18,7 @@ kubectl exec -it deployments/kafka -- /opt/kafka/bin/kafka-topics.sh --create --
 Typically the order events are created on the backend servers everytime an user successfully submits an order. We will simulate this by inserting multiple events into Kafka by executing the following command.
 
 ```bash
-kubectl exec -it deployments/kafka -- /opt/kafka/bin/kafka-console-producer.sh --topic orders --broker-list kafka:9092 < /tmp/kafka/messages1.txt
+kubectl exec -it deployments/kafka -- bash -c "/opt/kafka/bin/kafka-console-producer.sh --topic orders --broker-list kafka:9092 < /tmp/kafka/messages1.txt"
 ```{{exec}}
 
 We can have a look at the inserted events by executing the following command:
