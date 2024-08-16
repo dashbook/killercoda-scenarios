@@ -25,7 +25,7 @@ We can have a look at the inserted events by executing the following command:
 As you can see, an event contains information about the quantity, the time, the customer and the product.
 
 ```bash
-kubectl exec -it deployments/kafka -- /opt/kafka/bin/kafka-console-consumer.sh --topic orders --bootstrap-server kafka:9092 --from-beginning
+kubectl exec -it deployments/kafka -- cat /tmp/kafka/messages1.txt
 ```{{exec}}
 
 ### Postgres database

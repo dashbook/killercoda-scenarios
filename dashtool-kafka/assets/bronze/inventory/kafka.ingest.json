@@ -15,7 +15,7 @@
     "catalogName": "bronze",
     "catalogUrl": "postgres://postgres:postgres@postgres:5432",
     "awsRegion": "us-east-1",
-    "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+    "awsAccessKeyId": "$AWS_ACCESS_KEY_ID",
     "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
     "awsEndpoint": "http://localstack:4566",
     "awsAllowHttp": "true",

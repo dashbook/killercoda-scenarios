@@ -51,7 +51,10 @@ spec:
             - name: AWS_DEFAULT_REGION
               value: us-east-1
             - name: AWS_ACCESS_KEY_ID
-              value: AKIAIOSFODNN7EXAMPLE
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: access_key_id
           volumeMounts:
             - name: localstack-init
               mountPath: /etc/localstack/init/ready.d

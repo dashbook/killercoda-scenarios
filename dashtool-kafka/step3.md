@@ -5,45 +5,46 @@ so, we will first copy the data from the operational systems to the analytical
 system without applying any transformations. This is called the EL step, which
 we will do next.
 
-### Configure Singer Tap and Target
+### Configure Aribyte Source and Destination
 
-Dashtool handles the EL step by leveraging the [Singer](www.singer.io)
-specification. The Singer specification defines a standard way to communicate
-between data sources and destinations, called Taps and Targets.
+Dashtool handles the EL step by leveraging the [Airbyte](https://airbyte.com)
+specification. The Airbyte specification defines a standard way to communicate
+between data sources and destinations.
 
-Let's define Singer Taps to extract the data from the Kafka server and Postgres database and a
-Singer Target to load it in to an Iceberg table. 
+Let's define Airbyte Sources to extract the data from the Kafka server and Postgres database and Airbyte Destinations to load it into Iceberg tables. 
 
-#### Kafka Tap & Target
+#### Kafka Source & Destination
 
-We'll define the Kafka tap and target in the `bronze/inventory/kafka.singer.json` file.
+We'll define the Kafka source and destination in the `bronze/inventory/kafka.ingest.json` file.
 The `image` field specifies which docker container to use for the extraction.
 
-The `tap` field contains configuration parameters for the [Kafka Tap](https://github.com/dashbook/tap-kafka).
+The `source` field contains configuration parameters for the [Kafka Source](https://github.com/dashbook/airbyte/blob/master/docs/integrations/sources/kafka.md).
 It contains information about the connection, which topic wo extract and the schema for the topic.
 
-The `target` field contains configuration parameters for the
-[Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
+The `destination` field contains configuration parameters for the
+[Iceberg Destination](https://github.com/dashbook/destination-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
 
-#### Postgres Tap & Target
+#### Postgres Source & Destination
 
-The Postgres tap and target are defined in the `bronze/inventory/postgres.singer.json` file.
-The `tap` field contains the configuration parameters for the
-[Postgres Tap](https://github.com/singer-io/tap-postgres).
+The Postgres source and destination are defined in the `bronze/inventory/postgres.ingest.json` file.
+The `source` field contains the configuration parameters for the
+[Postgres Source](https://github.com/dashbook/airbyte/blob/master/docs/integrations/sources/postgres.md).
 It contains information about the connection, which schemas to extract and what
-kind of replication to use. One great thing about the Postgres Tap
+kind of replication to use. One great thing about the Postgres Source
 is that it allows a log based replication which enables incremental extraction
 of the data without difficult setup.
 
-Run the following command to create a logical replication slot for the tap:
+Run the following commands to create a logical replication slot and publication for the source:
 ```bash
-kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('stitch_postgres', 'wal2json');"
+kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "SELECT pg_create_logical_replication_slot('airbyte_slot', 'pgoutput');"
+
+kubectl  exec -ti postgres-0 -- env PGPASSWORD=postgres psql -h postgres -U postgres postgres -c "CREATE PUBLICATION airbyte_publication FOR TABLE inventory.orders, inventory.customers, inventory.products;"
 ```{{exec}}
 
-The `target` field contains configuration parameters for the
-[Iceberg Target](https://github.com/dashbook/target-iceberg). It contains
+The `destination` field contains configuration parameters for the
+[Iceberg Destination](https://github.com/dashbook/destination-iceberg). It contains
 information about which tables to extract, which iceberg catalog to use and
 parameters for the S3 object store.
 
@@ -51,7 +52,7 @@ parameters for the S3 object store.
 
 Dashtool creates the entities in the lakehouse according to the local git repository.
 If the files exist on a branch in the git repository, it will create the same branch for the entity.
-So to create the Iceberg tables for the Tap and Target we have to add the `tap.json` and `target.json` files to a git branch.
+So to create the Iceberg tables for the Sources and Destinations we have to add the `kafka.ingest.json` and `postgres.ingest.json` files to a git branch.
 For that we create a git repository and create a bronze branch.
 
 ```
@@ -63,10 +64,10 @@ git branch bronze
 git checkout bronze
 ```{{exec}}
 
-Let's add the the `kafka.singer.json` and `postgres.singer.json` files to the bronze branch so that dashtool can create the corresponding tables.
+Let's add the the `kafka.ingest.json` and `postgres.ingest.json` files to the bronze branch so that dashtool can create the corresponding tables.
 
 ```
-git add bronze/inventory/kafka.singer.json bronze/inventory/postgres.singer.json
+git add bronze/inventory/kafka.ingest.json bronze/inventory/postgres.ingest.json
 git commit -m "bronze"
 ```{{exec}}
 
