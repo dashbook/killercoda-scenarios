@@ -12,13 +12,13 @@
     "group_id": "airbyte"
   },
   "destination": {
-    "catalogName": "bronze",
-    "catalogUrl": "postgres://postgres:postgres@postgres:5432",
-    "awsRegion": "us-east-1",
-    "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
-    "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
-    "awsEndpoint": "http://localstack:4566",
-    "awsAllowHttp": "true",
+    "catalog_name": "bronze",
+    "catalog_url": "postgres://postgres:postgres@postgres:5432",
+    "aws_region": "us-east-1",
+    "aws_access_key_id": "AKIAIOSFODNN7EXAMPLE",
+    "aws_secret_access_key": "$AWS_SECRET_ACCESS_KEY",
+    "aws_endpoint": "http://localstack:4566",
+    "aws_allow_http": "true",
     "bucket": "s3://example-kafka"
   }
 }

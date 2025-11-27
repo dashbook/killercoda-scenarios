@@ -12,13 +12,13 @@
     }
   },
   "destination": {
-    "catalogName": "bronze",
-    "catalogUrl": "mysql://mysqluser:$MYSQL_PASSWORD@mysql:3306/inventory",
-    "awsRegion": "us-east-1",
-    "awsAccessKeyId": "$AWS_ACCESS_KEY_ID",
-    "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
-    "awsEndpoint": "http://localstack:4566",
-    "awsAllowHttp": "true",
+    "catalog_name": "bronze",
+    "catalog_url": "mysql://mysqluser:$MYSQL_PASSWORD@mysql:3306/inventory",
+    "aws_region": "us-east-1",
+    "aws_access_key_id": "$AWS_ACCESS_KEY_ID",
+    "aws_secret_access_key": "$AWS_SECRET_ACCESS_KEY",
+    "aws_endpoint": "http://localstack:4566",
+    "aws_allow_http": "true",
     "bucket": "s3://example-mysql"
   }
 }
